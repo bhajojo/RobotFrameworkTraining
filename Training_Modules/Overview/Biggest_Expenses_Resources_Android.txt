@@ -1,0 +1,65 @@
+*** Keywords ***
+Bigest_Expenses
+    Connect To Database    ibm_db_dbi    PFM    DB2ADMIN    12Setup21    10.32.153.46    50000
+    Log    Get top 5 expenses from DB
+    @{ValueDate}=    query    select ValueDate from ttransaction \ where parent is Null and valuedate between '2016-06-01' and '2016-12-01' order by originalAmount asc fetch first 5 rows only
+    @{Receiver}=    query    select Receiver from ttransaction \ where parent is Null and valuedate between '2016-06-01' and '2016-12-01' order by originalAmount asc fetch first 5 rows only
+    @{Amount}=    query    select OriginalAmount from ttransaction \ where parent is Null and valuedate between '2016-06-01' and '2016-12-01' order by originalAmount asc fetch first 5 rows only
+    AppiumLibrary.click element    ${objOverviewDateIconOpen}
+    sleep    2s
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.clear text    ${objFromDate}
+    sleep    1s
+    AppiumLibrary.input text    ${objFromDate}    06/01/2016
+    sleep    3s
+    AppiumLibrary.click element    ${objToDate}
+    Sleep    1S
+    AppiumLibrary.clear text    ${objToDate}
+    sleep    3s
+    AppiumLibrary.input text    ${objToDate}    12/01/2016
+    sleep    3s
+    AppiumLibrary.click element    ${objTopTabMobile}
+    sleep    1s
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.Page Should contain Element    ${objBiggestTransactionLabelMobile}
+    ${Index}=    Set variable    1
+    Comment    To compare top 5 Expense amount with DB
+    :FOR    ${Index}    IN RANGE    1    6
+    \    ${AmountApp}=    AppiumLibrary.get element attribute    xpath = .//*[@id='wrapper']//div[1]/span/div[${Index}]//div[@class='amount']//span    textContent
+    \    ${AmountApp}=    Remove String    ${AmountApp}    €    ,
+    \    Log    ${AmountApp}
+    \    ${AmountDB}=    Set Variable    ${Amount[${Index}-1]}
+    \    ${AmountDB}=    Convert to String    ${AmountDB}
+    \    ${AmountDB}=    Remove String    ${AmountDB}    (Decimal('    '),)
+    \    Log    ${AmountDB}
+    \    Should be Equal    ${AmountDB}    ${AmountApp}
+    Comment    To compare top 5 Expense Beneficiary name with DB
+    :FOR    ${Index}    IN RANGE    1    6
+    \    ${ReceiverApp}=    AppiumLibrary.get element attribute    xpath = .//*[@id='wrapper']//div[1]/span/div[${Index}]//div[@class='beneficiary']    textContent
+    \    Log    ${ReceiverApp}
+    \    ${ReceiverDB}=    Set Variable    ${Receiver[${Index}-1]}
+    \    ${ReceiverDB}=    Convert to String    ${ReceiverDB}
+    \    ${ReceiverDB}=    Remove String    ${ReceiverDB}    (u'    ',)
+    \    Log    ${ReceiverDB}
+    \    Should be Equal    ${ReceiverDB}    ${ReceiverApp}
+    Comment    To compare top 5 Expense Date with DB
+    :FOR    ${Index}    IN RANGE    1    6
+    \    ${DateApp}=    AppiumLibrary.get element attribute    xpath = .//*[@id='wrapper']//div[1]/span/div[${Index}]//div[@class='date']/span    textContent
+    \    Log    ${DateApp}
+    \    ${ValueDateDB}=    Set Variable    ${ValueDate[${Index}-1]}
+    \    ${ValueDateDB}=    Convert to String    ${ValueDateDB}
+    \    ${ValueDateDB}=    Remove String    ${ValueDateDB}    (datetime.datetime(    , 0, 0),)
+    \    @{Date}=    Split String    ${ValueDateDB}    ,
+    \    ${ValueDateDB}=    Set Variable    ${Date[1].strip()}/${Date[2].strip()}/${Date[0].strip()}
+    \    Log    ${ValueDateDB}
+    \    Should be Equal    ${ValueDateDB}    ${DateApp}
+    Comment    To verify system opens tarnsaction page for all 5 expenses
+    :FOR    ${Index}    IN RANGE    1    6
+    \    ${AmountApp}=    AppiumLibrary.get element attribute    xpath = .//*[@id='wrapper']//div[1]/span/div[${Index}]//div[@class='amount']//span    textContent
+    \    AppiumLibrary.Click element    xpath = .//*[@id='wrapper']//div[1]/span/div[${Index}]//div[@class='amount']//span
+    \    Sleep    3S
+    \    AppiumLibrary.Capture Page Screenshot
+    \    AppiumLibrary.Page Should Contain Element    ${objPopupTxnHeader}
+    \    Comment    Page Should Contain Element    xpath = .//*[@id='wrapper']//p[@class='amount']/span[contains(.,'${AmountApp}')]
+    \    AppiumLibrary.Click element    ${objPopupClose}
+    \    Sleep    2S

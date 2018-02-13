@@ -1,0 +1,353 @@
+﻿*** Settings ***
+Library           OperatingSystem
+Library           Selenium2Library
+Library           ExcelLibrary
+Library           Collections
+Library           DateTime
+Variables         ../../Common_Resources/objRepPFM.py
+Resource          ../../Common_Resources/common_resources.txt
+
+*** Keywords ***
+Date_Selection
+    [Documentation]    Select from and To date from calendar control
+    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
+    @{List}=    Get Row Values    Time Based Comparision    1
+    AppiumLibrary.Click Element    ${objOverviewDateIconOpen}
+    sleep    1s
+    press key    ${objFromDate}    \\9
+    sleep    2s
+    press key    ${objFromDate}    \\127
+    AppiumLibrary.Input Text    ${objFromDate}    ${List[0][1]}
+    sleep    1s
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    ${objDateControl}
+    sleep    1s
+    press key    ${objToDate}    \\9
+    sleep    1s
+    AppiumLibrary.Input Text    ${objToDate}    ${List[1][1]}
+    sleep    2s
+    AppiumLibrary.Click Element    ${objDateControl}
+    AppiumLibrary.capture page screenshot
+
+Subcategory_Budget_Window_Step1
+    [Arguments]    ${SubCategoryName}
+    [Documentation]    1. Click on Budget indicator
+    ...
+    ...    2. Click on Set Budget Button
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison__primary' and contains(.,'${SubCategoryName}')]
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    Sleep    2s
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowSetBudgetButton}
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+
+Subcategory_Budget_Window_Step1_Objects_Validation
+    [Arguments]    ${SubCategoryName}
+    [Documentation]    Verify following objects on Set Subcategory Budget Window:
+    ...
+    ...    1. Window Header
+    ...
+    ...    2. Close I Con
+    ...
+    ...    3. Current Label
+    ...
+    ...    4. No Budget Label
+    ...
+    ...    5. Current Month Budget
+    ...
+    ...    6. Set Budget Button
+    ...
+    ...    Click Close icon
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//h1[@class='overlay-title' and contains(.,'${SubCategoryName}')]
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowCloseICon}
+    AppiumLibrary.Page should contain element    ${objSubcategoryBudgetWindowCurrentLabel}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowNoBudgetLabel}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowCurrentMonthBudget}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowSetBudgetButton}
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowCloseICon}
+    AppiumLibrary.capture page screenshot
+
+Click_Budget_Indicator_OverviewPage
+    [Documentation]    --To verify user is able to click on budget indicator / circle on Overview page
+    ...
+    ...    Check category and subcategory is present
+    ...
+    ...    Click on Expense Category
+    ...
+    ...    Click on expense subcategory.
+    ...
+    ...    Click on budget indicator / circle
+    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
+    @{CategoryColumn}=    Get Column Values    Time Based Comparision    2
+    @{SubCategoryColumn}=    Get Column Values    Time Based Comparision    3
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${CategoryColumn[1][1]}')]
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+    ${SubCategoryName}=    Convert to string    ${SubCategoryColumn[1][1]}
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison__primary' and contains(.,'${SubCategoryName}')]
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+    [Return]    ${SubCategoryName}
+
+Set Sub Category Budget Window_Step2
+    [Documentation]    Set Sub Category Budget window Page objects validation and functionality
+    : FOR    ${Index}    IN RANGE    1    3
+    \    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowPlusSign}
+    \    AppiumLibrary.capture page screenshot
+    \    ${SubCategory_Expense_amt}=    Get Element Attribute    ${objSetSubCategoryBudgetWIndowSubCategoryExpenseAmount}@textContent
+    \    ${SubCategory_Budget_amt}=    Get Text    ${objSetSubCategoryBudgetWIndowSubCategoryBudgetAmount}
+    \    ${SubCategory_Expense_amt}    Remove String    ${SubCategory_Expense_amt}    €
+    \    ${SubCategory_Budget_amt}    Remove String    ${SubCategory_Budget_amt}    €
+    \    ${SubCategory_Expense_amt_ColorRed}    Convert to String    215, 151, 152
+    \    ${SubCategory_Expense_amt_ColorGreen}    Convert to String    54, 184, 76
+    \    ${SubCategory_Expense_amt_Color}    Get Element Attribute    ${objSetSubCategoryBudgetWIndowSubCategoryExpenseAmountColor}@style
+    \    ${SubCategory_Expense_amt_Color}    Remove String    ${SubCategory_Expense_amt_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    \    ${SubCategory_Expense_amt_Color}    Convert to String    ${SubCategory_Expense_amt_Color}
+    \    Run Keyword if    ${SubCategory_Expense_amt}<=${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${SubCategory_Expense_amt_Color}
+    \    ...    ELSE    Run Keyword if    ${SubCategory_Expense_amt}>${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}
+    \    ...    ${SubCategory_Expense_amt_Color}
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowDoneButton}
+    sleep    5s
+    AppiumLibrary.capture page screenshot
+    Comment    SubCategory_Window_After_BudgetSet    ${SubCategoryName}
+
+Set SubCategory Budget Window_Step2_Objects_Validation
+    [Arguments]    ${SubCategoryName}
+    [Documentation]    Set Sub Category Budget window (Step2) Page objects validation:
+    ...
+    ...    page heading , left arrow,cross button,Current label,budget amount,total amount,total amount color bar,bar color,
+    ...    minus sign,+ sign,budget count,done button
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowLeftArrowIcon}
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='overlay open setcategory-window']//h1[@class='overlay-title' and contains(.,'Set budget for ${SubCategoryName}')]
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowCloseICon}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowCurrentLabel}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowMonthlyExpenseAmount}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowMonthlyBudgetAmount}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowProgressLine}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowMinusSign}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowPlusSign}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowSetAmount}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowDoneButton}
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+
+Adjust_Budget
+    [Arguments]    ${SubCategoryName}
+    [Documentation]    1. Click on Budget Indicator
+    ...
+    ...    2. Click on Adjust Budget button
+    AppiumLibrary.Click Element    ${objAdjustBudgetButton}
+    Comment    ${SubCategory_Expense_amt}=    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='overlay-content']/div[@class='category']//div[@class='category__display__splits']//span[@class='category__set__budget']/span[1]@textContent
+    Comment    ${SubCategory_Budget_amt}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='overlay-content']/div[@class='category']//div[@class='category__display__splits']//span[@class='category__monthly__budget']/span[1]
+    Comment    ${SubCategory_Remaining_Or_Overspent_Budget_amt}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='progress']//div[@class='ref']/span/span[1]
+    ${SubCategory_Expense_amt}=    Get Element Attribute    ${objAdjustBudgetWindowSubCategoryExpenseAmount}@textContent
+    ${SubCategory_Budget_amt}=    Get Text    ${objAdjustBudgetWindowSubCategoryBudgetAmount}
+    ${SubCategory_Remaining_Or_Overspent_Budget_amt}=    Get Text    ${objAdjustBudgetWindowSubCategoryRemainingOrOverspentBudgetAmount}
+    ${SubCategory_Expense_amt}    Remove String    ${SubCategory_Expense_amt}    €
+    ${SubCategory_Budget_amt}    Remove String    ${SubCategory_Budget_amt}    €
+    ${SubCategory_Remaining_Or_Overspent_Budget_amt}    Remove String    ${SubCategory_Remaining_Or_Overspent_Budget_amt}    €
+    ${SubCategory_Expense_amt_ColorRed}    Convert to String    215, 151, 152
+    ${SubCategory_Expense_amt_ColorGreen}    Convert to String    54, 184, 76
+    ${SubCategory_Expense_amt_Color}    Get Element Attribute    ${objAdjustBudgetWindowExpenseAmountColor}@style
+    ${SubCategory_Expense_amt_Color}    Remove String    ${SubCategory_Expense_amt_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    ${SubCategory_Expense_amt_Color}    Convert to String    ${SubCategory_Expense_amt_Color}
+    ${SubCategory_Progress_Bar_Color}    Get Element Attribute    ${objAdjustBudgetWindowProgressBarColor}@style
+    Comment    ${SubCategory_Progress_Bar_Color}    Remove String    ${SubCategory_Progress_Bar_Color}    background: transparent linear-gradient(90deg, rgb(    ) -300%, rgb(151, 62, 62) 400%) repeat scroll 0% 0%;
+    Comment    ${SubCategory_Progress_Bar_Color}    Convert to String    ${SubCategory_Progress_Bar_Color}
+    ${CalculatedDIfference1}=    Evaluate    ${SubCategory_Budget_amt}-${SubCategory_Remaining_Or_Overspent_Budget_amt}
+    ${CalculatedDIfference2}=    Evaluate    ${SubCategory_Budget_amt}+${SubCategory_Remaining_Or_Overspent_Budget_amt}
+    ${CalculatedDIfference1}=    Convert to String    ${CalculatedDIfference1}
+    ${CalculatedDIfference2}=    Convert to String    ${CalculatedDIfference2}
+    @{CalculatedDIfference1}=    Split String    ${CalculatedDIfference1}    .
+    @{CalculatedDIfference2}=    Split String    ${CalculatedDIfference2}    .
+    Log    @{CalculatedDIfference1}[0]
+    Log    @{CalculatedDIfference1}[1]
+    Run Keyword if    ${SubCategory_Expense_amt}<=${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${SubCategory_Expense_amt_Color}
+    ...    ELSE    Run Keyword if    ${SubCategory_Expense_amt}>${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}    ${SubCategory_Expense_amt_Color}
+    Run Keyword if    @{CalculatedDIfference1}[0]==${SubCategory_Expense_amt}    Should contain    ${SubCategory_Progress_Bar_Color}    rgb(54, 184, 76)
+    ...    ELSE    Run Keyword if    @{CalculatedDIfference2}[0]==${SubCategory_Expense_amt}    Should contain    ${SubCategory_Progress_Bar_Color}    rgb(215, 151, 152)
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowCloseICon}
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    AppiumLibrary.Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    AppiumLibrary.Click Element    ${objAdjustBudgetButton}
+    Comment    ${Overview_Page_BudgetIndicator_Color}    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    Comment    ${Overview_Page_BudgetIndicator_Color}    Remove String    ${Overview_Page_BudgetIndicator_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    Comment    ${Overview_Page_BudgetIndicator_Color}    Convert to String    ${Overview_Page_BudgetIndicator_Color}
+    Comment    Run Keyword if    '${SubCategory_Expense_amt_Color}'=='${SubCategory_Expense_amt_ColorGreen}'    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${Overview_Page_BudgetIndicator_Color}
+    ...    ELSE    Run Keyword if    '${SubCategory_Expense_amt_ColorRed}'=='${SubCategory_Expense_amt_ColorGreen}'    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}    ${Overview_Page_BudgetIndicator_Color}
+    : FOR    ${Index}    IN RANGE    1    6
+    \    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowPlusSign}
+    \    AppiumLibrary.capture page screenshot
+    \    ${SubCategory_Expense_amt}=    Get Element Attribute    ${objAdjustBudgetWindowSubCategoryExpenseAmount}@textContent
+    \    ${SubCategory_Budget_amt}=    Get Text    ${objAdjustBudgetWindowSubCategoryBudgetAmount}
+    \    ${SubCategory_Expense_amt}    Remove String    ${SubCategory_Expense_amt}    €
+    \    ${SubCategory_Budget_amt}    Remove String    ${SubCategory_Budget_amt}    €
+    \    ${SubCategory_Expense_amt_ColorRed}    Convert to String    215, 151, 152
+    \    ${SubCategory_Expense_amt_ColorGreen}    Convert to String    54, 184, 76
+    \    ${SubCategory_Expense_amt_Color}    Get Element Attribute    ${objAdjustBudgetWindowExpenseAmountColor}@style
+    \    ${SubCategory_Expense_amt_Color}    Remove String    ${SubCategory_Expense_amt_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    \    ${SubCategory_Expense_amt_Color}    Convert to String    ${SubCategory_Expense_amt_Color}
+    \    Run Keyword if    ${SubCategory_Expense_amt}<=${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${SubCategory_Expense_amt_Color}
+    \    ...    ELSE    Run Keyword if    ${SubCategory_Expense_amt}>${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}
+    \    ...    ${SubCategory_Expense_amt_Color}
+    \    AppiumLibrary.capture page screenshot
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowDoneButton}
+    sleep    5s
+    AppiumLibrary.capture page screenshot
+
+Remove_Budget
+    AppiumLibrary.Page should contain element    ${objRemoveBudgetButton}
+    AppiumLibrary.Click Element    ${objRemoveBudgetButton}
+    Sleep    3s
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Page should contain element    ${objRemoveBudgetToolTip}
+    AppiumLibrary.Click Element    ${objRemoveBudgetToolTip}
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Page should contain element    ${objSetBudgetIon}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowNoBudgetLabel}
+
+SubCategory_Window_After_BudgetSet
+    [Arguments]    ${SubCategoryName}
+    AppiumLibrary.Page should contain element    ${objRemoveBudgetButton}
+    AppiumLibrary.Click Element    ${objAdjustBudgetButton}
+    AppiumLibrary.Page should contain element    ${ObjSubCategoryWindowExpenseAmount}
+    AppiumLibrary.Page should contain element    ${ObjSubCategoryWindowBudgetAmount}
+    AppiumLibrary.Page should contain element    ${ObjSubCategoryWindowRemainingOrOverspentBudgetAmount}
+    AppiumLibrary.Page should contain element    ${ObjSubCategoryWindowProgressBar}
+    ${SubCategory_Expense_amt}=    Get Element Attribute    ${ObjSubCategoryWindowExpenseAmount}@textContent
+    ${SubCategory_Budget_amt}=    Get Text    ${ObjSubCategoryWindowBudgetAmount}
+    ${SubCategory_Remaining_Or_Overspent_Budget_amt}=    Get Text    ${ObjSubCategoryWindowRemainingOrOverspentBudgetAmount}
+    ${SubCategory_Expense_amt}    Remove String    ${SubCategory_Expense_amt}    €
+    ${SubCategory_Budget_amt}    Remove String    ${SubCategory_Budget_amt}    €
+    ${SubCategory_Remaining_Or_Overspent_Budget_amt}    Remove String    ${SubCategory_Remaining_Or_Overspent_Budget_amt}    €
+    ${SubCategory_Expense_amt_ColorRed}    Convert to String    215, 151, 152
+    ${SubCategory_Expense_amt_ColorGreen}    Convert to String    54, 184, 76
+    ${SubCategory_Expense_amt_Color}    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='category__manage__budget']/span[@class='category__set__budget']@style
+    ${SubCategory_Expense_amt_Color}    Remove String    ${SubCategory_Expense_amt_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    ${SubCategory_Expense_amt_Color}    Convert to String    ${SubCategory_Expense_amt_Color}
+    ${SubCategory_Progress_Bar_Color}    Get Element Attribute    ${ObjSubCategoryWindowProgressBar}@style
+    Comment    ${SubCategory_Progress_Bar_Color}    Remove String    ${SubCategory_Progress_Bar_Color}    width: 71.4286%; background: rgb(    ) none repeat scroll 0% 0%;
+    Comment    ${SubCategory_Progress_Bar_Color}    Convert to String    ${SubCategory_Progress_Bar_Color}
+    ${CalculatedDIfference1}=    Evaluate    ${SubCategory_Budget_amt}-${SubCategory_Remaining_Or_Overspent_Budget_amt}
+    ${CalculatedDIfference2}=    Evaluate    ${SubCategory_Budget_amt}+${SubCategory_Remaining_Or_Overspent_Budget_amt}
+    ${CalculatedDIfference1}=    Convert to String    ${CalculatedDIfference1}
+    ${CalculatedDIfference2}=    Convert to String    ${CalculatedDIfference2}
+    @{CalculatedDIfference1}=    Split String    ${CalculatedDIfference1}    .
+    @{CalculatedDIfference2}=    Split String    ${CalculatedDIfference2}    .
+    Log    @{CalculatedDIfference1}[0]
+    Log    @{CalculatedDIfference2}[0]
+    Run Keyword if    ${SubCategory_Expense_amt}<=${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${SubCategory_Expense_amt_Color}
+    ...    ELSE    Run Keyword if    ${SubCategory_Expense_amt}>${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}    ${SubCategory_Expense_amt_Color}
+    Run Keyword if    @{CalculatedDIfference1}[0]==${SubCategory_Expense_amt}    Should contain    ${SubCategory_Progress_Bar_Color}    rgb(54, 184, 76)
+    ...    ELSE    Run Keyword if    @{CalculatedDIfference2}[0]==${SubCategory_Expense_amt}    Should contain    ${SubCategory_Progress_Bar_Color}    rgb(215, 151, 152)
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowCloseICon}
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    ${Overview_Page_BudgetIndicator_Color}    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']@style
+    Comment    ${Overview_Page_BudgetIndicator_Color}    Remove String    ${Overview_Page_BudgetIndicator_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    Comment    ${Overview_Page_BudgetIndicator_Color}    Convert to String    ${Overview_Page_BudgetIndicator_Color}
+    Comment    Run Keyword if    '${SubCategory_Expense_amt_Color}'='${SubCategory_Expense_amt_ColorGreen}'    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${Overview_Page_BudgetIndicator_Color}
+    ...    ELSE    Run Keyword if    '${SubCategory_Expense_amt_Color}'='${SubCategory_Expense_amt_ColorRed}'    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}    ${Overview_Page_BudgetIndicator_Color}
+    Run Keyword if    '${SubCategory_Expense_amt_Color}'=='${SubCategory_Expense_amt_ColorGreen}'    Should contain    ${Overview_Page_BudgetIndicator_Color}    rgb(54, 184, 76)
+    ...    ELSE    Run Keyword if    '${SubCategory_Expense_amt_Color}'=='${SubCategory_Expense_amt_ColorRed}'    Should contain    ${Overview_Page_BudgetIndicator_Color}    rgb(215, 151, 152)
+
+Adjust_Budget_Page_Object_Validation
+    [Arguments]    ${SubCategoryName}
+    [Documentation]    1. Click on Budget Indicator
+    ...
+    ...    2. Click on Adjust Budget button
+    AppiumLibrary.Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    AppiumLibrary.Click Element    ${objAdjustBudgetButton}
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='overlay open setcategory-window']//h1[@class='overlay-title' and contains(.,'Adjust budget for ${SubCategoryName}')]
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowMinusSign}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowPlusSign}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowSetAmount}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowDoneButton}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowCloseICon}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowCurrentLabel}
+    AppiumLibrary.Page should contain element    ${objSetSubcategoryBudgetWindowLeftArrowIcon}
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowLeftArrowIcon}
+    Sleep    4s
+
+Click_Budget_Indicator_OverviewPage1
+    [Documentation]    --To verify user is able to click on budget indicator / circle on Overview page
+    ...
+    ...    Check category and subcategory is present
+    ...
+    ...    Click on Expense Category
+    ...
+    ...    Click on expense subcategory.
+    ...
+    ...    Click on budget indicator / circle
+    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
+    @{CategoryColumn}=    Get Column Values    Time Based Comparision    2
+    @{SubCategoryColumn}=    Get Column Values    Time Based Comparision    3
+    Date selection
+    AppiumLibrary.Click Element    ${objComparisonCheckbox}
+    Sleep    1s
+    AppiumLibrary.Click Element    ${objOverviewDateIconClose}
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${CategoryColumn[1][1]}')]
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+    ${SubCategoryName}=    Convert to string    ${SubCategoryColumn[1][1]}
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison__primary' and contains(.,'${SubCategoryName}')]
+    AppiumLibrary.capture page screenshot
+    AppiumLibrary.Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    Sleep    2s
+    AppiumLibrary.capture page screenshot
+    Comment    ${WhiteCircle}=    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a/div@style
+    [Return]    ${SubCategoryName}
+
+SubCategory_Window_After_BudgetSet1
+    [Arguments]    ${SubCategoryName}
+    AppiumLibrary.Page should contain element    ${objRemoveBudgetButton}
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='category__manage__budget']//span[@class='category__set__budget']/span
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='category__manage__budget']//span[@class='category__monthly__budget']//span[1]
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='progress']//div[@class='ref']//span[1]
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='progress']//div[@class='bar']/div[1]
+    ${SubCategory_Expense_amt}=    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='category__manage__budget']//span[@class='category__set__budget']/span@textContent
+    ${SubCategory_Budget_amt}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='category__manage__budget']//span[@class='category__monthly__budget']//span[1]
+    ${SubCategory_Remaining_Or_Overspent_Budget_amt}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='progress']//div[@class='ref']//span[1]
+    ${SubCategory_Expense_amt}    Remove String    ${SubCategory_Expense_amt}    €
+    ${SubCategory_Budget_amt}    Remove String    ${SubCategory_Budget_amt}    €
+    ${SubCategory_Remaining_Or_Overspent_Budget_amt}    Remove String    ${SubCategory_Remaining_Or_Overspent_Budget_amt}    €
+    ${SubCategory_Expense_amt_ColorRed}    Convert to String    215, 151, 152
+    ${SubCategory_Expense_amt_ColorGreen}    Convert to String    54, 184, 76
+    ${SubCategory_Expense_amt_Color}    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='category__manage__budget']/span[@class='category__set__budget']@style
+    ${SubCategory_Expense_amt_Color}    Remove String    ${SubCategory_Expense_amt_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    ${SubCategory_Expense_amt_Color}    Convert to String    ${SubCategory_Expense_amt_Color}
+    ${SubCategory_Progress_Bar_Color}    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='progress']//div[@class='bar']/div[1]@style
+    ${SubCategory_Progress_Bar_Color}    Remove String    ${SubCategory_Progress_Bar_Color}    width: 71.4286%; background: rgb(    ) none repeat scroll 0% 0%;
+    ${SubCategory_Progress_Bar_Color}    Convert to String    ${SubCategory_Progress_Bar_Color}
+    ${CalculatedDIfference1}=    Evaluate    ${SubCategory_Budget_amt}-${SubCategory_Remaining_Or_Overspent_Budget_amt}
+    ${CalculatedDIfference2}=    Evaluate    ${SubCategory_Budget_amt}+${SubCategory_Remaining_Or_Overspent_Budget_amt}
+    ${CalculatedDIfference1}=    Convert to String    ${CalculatedDIfference1}
+    ${CalculatedDIfference2}=    Convert to String    ${CalculatedDIfference2}
+    @{CalculatedDIfference1}=    Split String    ${CalculatedDIfference1}    .
+    @{CalculatedDIfference2}=    Split String    ${CalculatedDIfference2}    .
+    Log    @{CalculatedDIfference1}[0]
+    Log    @{CalculatedDIfference2}[0]
+    Run Keyword if    ${SubCategory_Expense_amt}<=${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${SubCategory_Expense_amt_Color}
+    ...    ELSE    Run Keyword if    ${SubCategory_Expense_amt}>${SubCategory_Budget_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}    ${SubCategory_Expense_amt_Color}
+    Run Keyword if    @{CalculatedDIfference1}[0]==${SubCategory_Expense_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${SubCategory_Progress_Bar_Color}
+    ...    ELSE    Run Keyword if    @{CalculatedDIfference2}[0]==${SubCategory_Expense_amt}    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}    ${SubCategory_Progress_Bar_Color}
+    AppiumLibrary.Click Element    ${objSetSubcategoryBudgetWindowCloseICon}
+    AppiumLibrary.Page should contain element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    ${Overview_Page_BudgetIndicator_Color}    Get Element Attribute    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//a//div[@class='set-category-budget']
+    ${Overview_Page_BudgetIndicator_Color}    Remove String    ${Overview_Page_BudgetIndicator_Color}    background: rgb(    ) none repeat scroll 0% 0%;
+    ${Overview_Page_BudgetIndicator_Color}    Convert to String    ${Overview_Page_BudgetIndicator_Color}
+    Run Keyword if    '${SubCategory_Expense_amt_Color}'='${SubCategory_Expense_amt_ColorGreen}'    should be equal as Strings    ${SubCategory_Expense_amt_ColorGreen}    ${Overview_Page_BudgetIndicator_Color}
+    ...    ELSE    Run Keyword if    '${SubCategory_Expense_amt_ColorRed}'='${SubCategory_Expense_amt_ColorGreen}'    should be equal as Strings    ${SubCategory_Expense_amt_ColorRed}    ${Overview_Page_BudgetIndicator_Color}

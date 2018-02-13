@@ -1,0 +1,24 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           OperatingSystem
+Library           Selenium2Library
+Library           ExcelLibrary
+Library           Collections
+Library           DateTime
+Variables         ../../Common_Resources/objRepPFM.py
+Library           AppiumLibrary
+Resource          Overview_Resources_Android.txt
+
+*** Test Cases ***
+Overview_Device
+    [Setup]    Kill_Process_Android
+    Login_Android_Chrome
+    Overview_Date_Selection
+    Comment    Accounts_Validation
+    Comment    No_Account_Selected_Validation
+    Comment    ${Total_Income}    ${Total_Expenses}    Overview_section_Validation
+    Comment    Total_Income_Validation    ${Total_Income}
+    Comment    Total_Expenses_Validation    ${Total_Expenses}
+    Ovrvw_Validate_Income_Txns
+    Ovrvw_Validate_Expenses_Txns
+    [Teardown]    Kill_Process_Android

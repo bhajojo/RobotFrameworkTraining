@@ -1,0 +1,178 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../Common_Resources/common_resources.txt
+Variables         ../../Common_Resources/objRepPFM.py
+Library           Collections
+Library           String
+
+*** Keywords ***
+Create_Tags
+    Capture Page Screenshot
+    Wait Until Page Contains Element    ${objOverviewIncomeInvestmentCat}    5S
+    Click Element    ${objOverviewIncomeInvestmentCat}
+    Capture Page Screenshot
+    Page Should Contain    Shares
+    Click Element    ${objOverviewIncomeInvestShareSubCat}
+    Capture Page Screenshot
+    ${beneName}=    Get Text    xpath=//div[@class='transactions list-view']/div[1]/a[@class='list-item-content']/div//div[@class='beneficiary']
+    Click Element    ${objOverviewInvestShareFirstTransaction}
+    Sleep    3S
+    Capture Page Screenshot
+    ${ToName}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='content']//dd/p[@class='to']
+    Comment    Select Window    new
+    Get Lines Containing String    ${ToName}    ${beneName}
+    Page Should Contain Element    ${objTransactionWindowAddTag}
+    Capture Page Screenshot
+    ${var}=    Get Matching Xpath Count    xpath=.//*[@id='wrapper']//div[@class='autocomplete_field']/a[@class='tag removable' and contains(.,'NewTag')]
+    Input Text    ${objTransactionWindowAddTag}    NewTag
+    Click Element    ${objTransactionWindowAddButton}
+    Capture Page Screenshot
+    Wait Until Page Contains Element    ${objTransactionWindowAddedTag}    2S
+    Run Keyword IF    ${var}==1    Page should Contain Element    ${objTransactionWindowTagExist}
+    ...    ELSE    Run Keyword    Check_TagValue    1
+    Capture Page Screenshot
+
+Check_TagValue
+    [Arguments]    ${TagCheck}
+    ${count}=    Get Matching Xpath Count    .//*[@id='wrapper']//div[@class='autocomplete_field']/a
+    Log    ${count}
+    ${Tagname}=    Create List
+    : FOR    ${i}    IN RANGE    1    ${count}+1
+    \    ${addedTag}=    Get Text    ${objTransactionWindowAddedTag}[${i}]
+    \    Append To List    ${Tagname}    ${addedTag}
+    log    ${Tagname}
+    Run keyword If    ${TagCheck}==1    Should Contain    ${Tagname}    NewTag
+    ...    ELSE    Should Not Contain    ${Tagname}    NewTag
+    Capture Page Screenshot
+
+View_All_Tags_Module
+    ${months}=    Month_Dictionary
+    log    ${months}
+    Click Element    ${objOverviewHeaderInActive}
+    Wait Until Page Contains Element    ${objOverviewIncomeInvestmentCat}    5S
+    Capture Page Screenshot
+    Click Element    ${objOverviewIncomeInvestmentCat}
+    Capture Page Screenshot
+    Click Element    ${objOverviewIncomeInvestShareSubCat}
+    Capture Page Screenshot
+    Click Element    ${objOverviewInvestShareFirstTransaction}
+    Sleep    2S
+    Click Element    ${objTransactionWindowAddedTag}[1]
+    Capture Page Screenshot
+    Click Element    ${objTransactionWindowViewAllTagsLink}
+    Wait Until Page contains Element    ${objTagsHeaderActive}    5S
+    Capture Page Screenshot
+    Click Element    ${objOverviewDateIconOpen}
+    ${TagStartHeader}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='date-header']/span[1]
+    ${TagEndHeader}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='date-header']/span[2]
+    ${From}=    Get Element Attribute    ${objFromDate}@value
+    ${To}=    Get Element Attribute    ${objToDate}@value
+    @{FromMonth}=    Split String    ${From}    /
+    log    ${FromMonth[0]}
+    ${FromDate}=    Convert To Integer    ${FromMonth[1]}
+    Should Contain    ${months['${FromMonth[0]}']} ${FromDate}    ${TagStartHeader}
+    @{ToMonth}=    Split String    ${To}    /
+    ${ToDate}=    Convert To Integer    ${ToMonth[1]}
+    Should Contain    ${months['${ToMonth[0]}']} ${ToDate}    ${TagEndHeader}
+
+View_Created_Tag_Under_ModuleTags
+    [Arguments]    ${TagCheck}
+    Comment    Click Element    ${objTransactionWindowCloseButton}
+    Comment    Sleep    2S
+    Comment    Click Element    ${objTagsHeaderInactive}
+    ${TagName}=    Get Matching Xpath Count    xpath=.//*[@id='wrapper']//div[@class='list-item-toggle']//div[@class='title']
+    log    ${TagName}
+    ${list}=    Create List
+    : FOR    ${i}    IN RANGE    1    ${TagName}+1
+    \    ${test}=    Execute JavaScript    return document.querySelectorAll(".title").item(${i}).innerHTML
+    \    Append To List    ${list}    ${test}
+    log    ${list}
+    Run keyword If    ${TagCheck}==1    Should Contain    ${list}    NewTag
+    ...    ELSE    Should Not Contain    ${list}    NewTag
+
+Month_Dictionary
+    ${month}=    Create Dictionary
+    Set To Dictionary    ${month}    1    January
+    Set To Dictionary    ${month}    2    February
+    Set To Dictionary    ${month}    3    March
+    Set To Dictionary    ${month}    4    April
+    Set To Dictionary    ${month}    5    May
+    Set To Dictionary    ${month}    6    June
+    Set To Dictionary    ${month}    7    July
+    Set To Dictionary    ${month}    8    August
+    Set To Dictionary    ${month}    9    September
+    Set To Dictionary    ${month}    10    October
+    Set To Dictionary    ${month}    11    November
+    Set To Dictionary    ${month}    12    December
+    Log    ${month}
+    [Return]    ${month}
+
+Delete_Tag_From_Transaction
+    Sleep    2S
+    Click Element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'NewTag')]
+    ${SubCat}=    Get Matching Xpath Count    .//*[@id='wrapper']//div[@class='category list-item-expanded list-item']//div[contains(.,'NewTag')]//..//div[@class='subcategory list-item-collapsed list-item']
+    : FOR    ${i}    IN RANGE    1    ${SubCat}+1
+    \    Click Element    ${objTagsSubCategaoriesNewTag}[${i}]
+    Capture Page Screenshot
+    Run Keyword If    ${SubCat}==1    Run Keyword    Check_Transaction_Count
+    ...    ELSE    Run Keyword    Transaction_Delete
+
+Check_Transaction_Count
+    ${Transaction}=    Get Matching Xpath Count    .//*[@id='wrapper']//div[@class='transactions list-view']//a
+    Run Keyword If    ${Transaction}==1    Run Keyword    Tag_Delete
+    ...    ELSE    Run Keyword    Transaction_Delete
+
+Tag_Delete
+    Click Element    ${objTagFirstTransaction}
+    Capture Page Screenshot
+    Click Element    xpath=.//*[@id='wrapper']//div/a[@class='tag removable' and contains(.,'NewTag')]
+    Capture Page Screenshot
+    Click Element    ${objTransactionWindowDeleteButton}
+    Capture Page Screenshot
+    ${var}=    Get Matching Xpath Count    .//*[@id='wrapper']//div/a[@class='tag removable' and contains(.,'NewTag')]
+    Check_TagValue    ${var}
+    Click Element    ${objTransactionWindowCloseButton}
+    Capture Page Screenshot
+    Sleep    2S
+    ${count}=    Get Matching Xpath Count    .//*[@id='wrapper']//div[@class='title' and contains(.,'NewTag')]
+    Should be Equal    ${count}    0
+    View_Created_Tag_Under_ModuleTags    ${count}
+
+Transaction_Delete
+    Click Element    ${objTagFirstTransaction}
+    Capture Page Screenshot
+    ${ToName}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='content']//dd/p[@class='to']
+    Click Element    xpath=.//*[@id='wrapper']//div/a[@class='tag removable' and contains(.,'NewTag')]
+    Capture Page Screenshot
+    Click Element    ${objTransactionWindowDeleteButton}
+    Capture Page Screenshot
+    ${var}=    Get Matching Xpath Count    .//*[@id='wrapper']//div/a[@class='tag removable' and contains(.,'NewTag')]
+    Check_TagValue    ${var}
+    Click Element    ${objTransactionWindowCloseButton}
+    Page Should Not Contain    xpath=.//*[@id='wrapper']//a//div[@class='beneficiary' and contains(.,'${ToName}')]/div[@class='tag' and contains(.,'NewTag')]
+
+Verify_Tag_Module_Overall
+    Comment    Click Element    ${objTagsHeaderInactive}
+    Wait Until Page contains Element    ${objTagsHeaderActive}    5S
+    Sleep    2S
+    ${Amount}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='col col-1 list-view']/span/div[1]/div//div[@class='amount']
+    @{TotalAmount}=    Split String    ${Amount}    €
+    ${TAmount}=    Remove String    ${TotalAmount[1]}    ,
+    ${TagAmt}=    Convert to Number    ${TAmount}
+    Click Element    ${objTagFirstTagFromList}
+    Sleep    2S
+    ${SubCat}=    Get Matching Xpath Count    .//*[@id='wrapper']//div[@class='category list-item-expanded list-item']//div[1]//..//div[@class='subcategory list-item-collapsed list-item']
+    : FOR    ${i}    IN RANGE    1    ${SubCat}+1
+    \    Click Element    ${objTagsSubCategaories}[${i}]
+    Capture Page Screenshot
+    ${Total}=    Evaluate    0
+    ${Transaction}=    Get Matching Xpath Count    .//*[@id='wrapper']//div[@class='transactions list-view']//a
+    : FOR    ${j}    IN RANGE    1    ${Transaction}+1
+    \    ${TranAmount}=    Get Text    xpath=.//*[@id='wrapper']//div[@class='transactions list-view']/div[${j}]/a//div[@class='amount']
+    \    @{finalAmount}    Split String    ${TranAmount}    €
+    \    ${var}=    Remove String    ${finalAmount[1]}    ,
+    \    ${amt}=    Set Variable    ${var}
+    \    ${tamt}=    Convert To String    ${amt}
+    \    ${Total}=    Evaluate    ${Total}+${tamt}
+    Log    ${Total}
+    Should Be Equal    ${TagAmt}    ${Total}

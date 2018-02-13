@@ -1,0 +1,20 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           OperatingSystem
+Library           Selenium2Library
+Library           ExcelLibrary
+Library           Collections
+Library           DateTime
+Variables         ../../Common_Resources/objRepPFM.py
+Resource          Time_Based_Comparison_Android_Resources.txt
+Library           AppiumLibrary
+
+*** Test Cases ***
+Time_Based_Comparison_Android
+    [Setup]    Kill_Process_Android
+    Login_Android_Chrome
+    Sleep    2s
+    AppiumLibrary.Page Should Contain Element    ${objTimeBasedComparisonSectionHeading}
+    Comparision_For_Previous_Period
+    Comment    Comparision_For_Previous_Year
+    [Teardown]    Kill_Process_Android

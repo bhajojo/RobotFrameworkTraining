@@ -1,0 +1,44 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Resource          Split_Transaction_Resources.txt
+Library           OperatingSystem
+Library           Selenium2Library
+Library           ExcelLibrary
+Library           Collections
+Library           DateTime
+Variables         ../../Common_Resources/objRepPFM.py
+Library           DatabaseLibrary
+Library           String
+
+*** Test Cases ***
+Expense_Split Transaction_FF
+    [Setup]    Kill Process
+    Login_Web    FF
+    Sleep    3S
+    Navigation_Object_Validation_SplitTranacstionDialog1
+    AmountValidation
+    Verify_Back_Button_Split_Dialog_Box
+    Verify_Cross_Button_functionality_On_Split_Dialog
+    Navigation_Object_Validation_SplitTranacstionDialog2
+    Split_Transaction_Same_Sub_Category
+    Split_Transaction_Same_Category
+    Split_Transaction_Different_Category
+    Delete_Child_Transaction
+    ErrorMessageValidation_With11Split
+    [Teardown]    Kill Process
+
+Income_Split Transaction_FF
+    [Setup]    Kill Process
+    Login_Web    FF
+    Sleep    3S
+    Income_Navigation_Object_Validation_SplitTranacstionDialog
+    Income_AmountValidation
+    Income_Verify_Back_Button_Split_Dialog_Box
+    Income_Verify_Cross_Button_functionality_On_Split_Dialog
+    Income_Navigation_Object_Validation_SplitTranacstionDialog2
+    Income_Split_Transaction_Same_Sub_Category
+    Income_Split_Transaction_Same_Category
+    Income_Split_Transaction_Different_Category
+    Income_Delete_Child_Transaction
+    Income_ErrorMessageValidation_With11Split
+    [Teardown]    Kill Process

@@ -1,0 +1,18 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Resource          Biggest_Expenses_Resources.txt
+Library           OperatingSystem
+Library           Selenium2Library
+Library           ExcelLibrary
+Library           Collections
+Library           DateTime
+Variables         ../../Common_Resources/objRepPFM.py
+Library           DatabaseLibrary
+Library           String
+
+*** Test Cases ***
+Biggest Expenses
+    [Setup]    Kill Process
+    Login_Web    FF
+    Biggest_expenses
+    [Teardown]    Kill Process

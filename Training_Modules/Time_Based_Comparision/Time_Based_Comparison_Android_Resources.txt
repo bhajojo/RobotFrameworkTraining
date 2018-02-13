@@ -1,0 +1,141 @@
+*** Settings ***
+Library           OperatingSystem
+Library           Selenium2Library
+Library           ExcelLibrary
+Library           Collections
+Library           DateTime
+Variables         ../../Common_Resources/objRepPFM.py
+Resource          ../../Common_Resources/common_resources.txt
+Library           AppiumLibrary
+
+*** Keywords ***
+Date_Selection1
+    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
+    @{List}=    Get Row Values    Time Based Comparision    1
+    AppiumLibrary.click element    ${objOverviewDateIconOpen}
+    sleep    1s
+    Comment    press key    ${objFromDate}    \\9
+    Comment    sleep    2s
+    Comment    press key    ${objFromDate}    \\127
+    Comment    Input text    ${objFromDate}    ${List[0][1]}
+    Comment    sleep    1s
+    Comment    AppiumLibrary.Capture Page Screenshot
+    Comment    AppiumLibrary.click element    ${objDateControl}
+    Comment    sleep    1s
+    Comment    press key    ${objToDate}    \\9
+    Comment    sleep    1s
+    Comment    Input text    ${objToDate}    ${List[1][1]}
+    Comment    sleep    2s
+    Comment    AppiumLibrary.click element    ${objDateControl}
+    Comment    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.clear text    ${objFromDate}
+    sleep    1s
+    AppiumLibrary.input text    ${objFromDate}    ${List[0][1]}
+    sleep    1s
+    AppiumLibrary.click element    ${objOverviewHeaderActive}
+    sleep    3s
+    AppiumLibrary.click element    ${objOverviewDateIconOpen}
+    sleep    1s
+    AppiumLibrary.clear text    ${objToDate}
+    sleep    1s
+    AppiumLibrary.input text    ${objToDate}    ${List[1][1]}
+    sleep    1s
+    AppiumLibrary.Capture Page Screenshot
+
+Comparision_For_Previous_Period
+    Date_Selection1
+    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
+    @{CategoryColumn}=    Get Column Values    Time Based Comparision    2
+    @{SubCategoryColumn}=    Get Column Values    Time Based Comparision    3
+    AppiumLibrary.click element    ${objComparisonCheckbox}
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.click element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${CategoryColumn[4][1]}')]
+    Sleep    2s
+    AppiumLibrary.Capture Page Screenshot
+    ${SubCategoryName}=    Convert to string    ${SubCategoryColumn[4][1]}
+    AppiumLibrary.click element    xpath=.//*[@id='wrapper']//..//div[@class='title' and contains(.,'${SubCategoryName}')]
+    Sleep    2s
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.Page Should Contain Element    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison__primary' and contains(.,'${SubCategoryName}')]
+    ${SubCategory_Expense_amt}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//div[@class='amount']/span    textContent
+    ${SubCategory_Expense_amt_fromTimeBasedComparision}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[1]//div[@class='hbar__bar hbar__value--barvalue']//span    textContent
+    ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[2]//div[@class='hbar__bar hbar__value--barvalue']//span    textContent
+    ${CurrentPeriodBar}=    AppiumLibrary.get element attribute    xpath= .//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[1]//div[@class='hbar__bar hbar__primary']//div    style
+    AppiumLibrary.Page Should Contain Element    xpath= .//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[2]//div[@class='hbar__bar hbar__primary']
+    ${PreviousPeriodBar}=    AppiumLibrary.get element attribute    xpath= .//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[2]//div[@class='hbar__bar hbar__primary']//div    style
+    ${SubCategory_Expense_amt}    remove string    ${SubCategory_Expense_amt}    -    €    ,
+    ${SubCategory_Expense_amt_fromTimeBasedComparision}    remove string    ${SubCategory_Expense_amt_fromTimeBasedComparision}    €    ,
+    ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}    remove string    ${SubCategory_Expense_amt_fromTimeBasedComparision}    €    ,
+    Log    ${SubCategory_Expense_amt}
+    Log    ${SubCategory_Expense_amt_fromTimeBasedComparision}
+    ${CurrentPeriodBar}    remove string    ${CurrentPeriodBar}    width:    px;
+    ${PreviousPeriodBar}    remove string    ${PreviousPeriodBar}    width:    px;
+    should be equal    ${SubCategory_Expense_amt}    ${SubCategory_Expense_amt_fromTimeBasedComparision}
+    ${Condition1}=    Run Keyword if    ${SubCategory_Expense_amt}>=${SubCategory_Expense_amt_fromTimeBasedComparision}    Log    Pass
+    ${Condition3}=    Run Keyword if    ${CurrentPeriodBar}>=${PreviousPeriodBar}    Log    Pass
+    ${Condition2}=    Run Keyword if    ${SubCategory_Expense_amt}<${SubCategory_Expense_amt_fromTimeBasedComparision}    Log    Pass
+    ${Condition4}=    Run Keyword if    ${CurrentPeriodBar}<${PreviousPeriodBar}    Log    Pass
+    Run Keyword if    ${Condition1}    ${Condition3}
+    ...    ELSE    Run Keyword if    ${Condition2}    ${Condition4}
+    ${CalculatedPercentage}    Evaluate    (${SubCategory_Expense_amt_fromTimeBasedComparision}- ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}) / ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}* 100
+    ${CalculatedPercentage}    Convert to integer    ${CalculatedPercentage}
+    ${Percentage_amt_fromTimeBasedComparision}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='time-comparison__secondary']    textContent
+    ${Percentage_amt_fromTimeBasedComparision}    remove string    ${Percentage_amt_fromTimeBasedComparision}    %
+    Comment    ${ComparePercentage}    Should be true    ${Percentage_amt_fromTimeBasedComparision}    ${CalculatedPercentage}
+    ${CheckCurrentPeriodAmountISNotZero}=    Run Keyword if    '${SubCategory_Expense_amt_fromTimeBasedComparision}'!='0'    Log    Pass
+    ${CheckPreviousPeriodAmountISNotZero}=    Run Keyword if    '${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}'!='0'    Log    Pass
+    Run Keyword if    ${CheckCurrentPeriodAmountISNotZero}    ${CheckPreviousPeriodAmountISNotZero}
+    ...    ELSE    Should be true    ${Percentage_amt_fromTimeBasedComparision}    ${CalculatedPercentage}
+
+Comparision_For_Previous_Year
+    Date_Selection1
+    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
+    @{CategoryColumn}=    Get Column Values    Time Based Comparision    2
+    @{SubCategoryColumn}=    Get Column Values    Time Based Comparision    3
+    AppiumLibrary.click element    ${objComparisonCheckbox}
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.click element    ${objComareToDropdown}
+    Sleep    1s
+    AppiumLibrary.click element    ${objCompareToDropdownYearSelection}
+    Sleep    2s
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.click element    ${objOverviewDateIconClose}
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.click element    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${CategoryColumn[4][1]}')]
+    Sleep    2s
+    AppiumLibrary.Capture Page Screenshot
+    ${SubCategoryName}=    Convert to string    ${SubCategoryColumn[4][1]}
+    AppiumLibrary.click element    xpath=.//*[@id='wrapper']//..//div[@class='title' and contains(.,'${SubCategoryName}')]
+    Sleep    2s
+    AppiumLibrary.Capture Page Screenshot
+    AppiumLibrary.Page Should Contain Element    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison__primary' and contains(.,'${SubCategoryName}')]
+    ${SubCategory_Expense_amt}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[@class='title' and contains(.,'${SubCategoryName}')]//..//div[@class='amount']/span    textContent
+    ${SubCategory_Expense_amt_fromTimeBasedComparision}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[1]//div[@class='hbar__bar hbar__value--barvalue']//span    textContent
+    ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[2]//div[@class='hbar__bar hbar__value--barvalue']//span    textContent
+    ${CurrentPeriodBar}=    AppiumLibrary.get element attribute    xpath= .//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[1]//div[@class='hbar__bar hbar__primary']//div    style
+    AppiumLibrary.Page Should Contain Element    xpath= .//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[2]//div[@class='hbar__bar hbar__primary']
+    ${PreviousPeriodBar}=    AppiumLibrary.get element attribute    xpath= .//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='timeChart']/div[2]//div[@class='hbar__bar hbar__primary']//div    style
+    ${SubCategory_Expense_amt}    remove string    ${SubCategory_Expense_amt}    -    €    ,
+    ${SubCategory_Expense_amt_fromTimeBasedComparision}    remove string    ${SubCategory_Expense_amt_fromTimeBasedComparision}    €    ,
+    ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}    remove string    ${SubCategory_Expense_amt_fromTimeBasedComparision}    €    ,
+    Log    ${SubCategory_Expense_amt}
+    Log    ${SubCategory_Expense_amt_fromTimeBasedComparision}
+    ${CurrentPeriodBar}    remove string    ${CurrentPeriodBar}    width:    px;
+    ${PreviousPeriodBar}    remove string    ${PreviousPeriodBar}    width:    px;
+    should be equal    ${SubCategory_Expense_amt}    ${SubCategory_Expense_amt_fromTimeBasedComparision}
+    ${Condition1}=    Run Keyword if    ${SubCategory_Expense_amt}>=${SubCategory_Expense_amt_fromTimeBasedComparision}    Log    Pass
+    ${Condition3}=    Run Keyword if    ${CurrentPeriodBar}>=${PreviousPeriodBar}    Log    Pass
+    ${Condition2}=    Run Keyword if    ${SubCategory_Expense_amt}<${SubCategory_Expense_amt_fromTimeBasedComparision}    Log    Pass
+    ${Condition4}=    Run Keyword if    ${CurrentPeriodBar}<${PreviousPeriodBar}    Log    Pass
+    Run Keyword if    ${Condition1}    ${Condition3}
+    ...    ELSE    Run Keyword if    ${Condition2}    ${Condition4}
+    ${CalculatedPercentage}    Evaluate    (${SubCategory_Expense_amt_fromTimeBasedComparision}- ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}) / ${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}* 100
+    ${CalculatedPercentage}    Convert to integer    ${CalculatedPercentage}
+    ${Percentage_amt_fromTimeBasedComparision}=    AppiumLibrary.get element attribute    xpath=.//*[@id='wrapper']//div[5]/div[2]//div[@class='time-comparison' and contains(.,'${SubCategoryName}')]//..//div[@class='time-comparison__secondary']    textContent
+    ${Percentage_amt_fromTimeBasedComparision}    remove string    ${Percentage_amt_fromTimeBasedComparision}    %
+    Comment    ${ComparePercentage}    Should be true    ${Percentage_amt_fromTimeBasedComparision}    ${CalculatedPercentage}
+    ${CheckCurrentPeriodAmountISNotZero}=    Run Keyword if    '${SubCategory_Expense_amt_fromTimeBasedComparision}'!='0'    Log    Pass
+    ${CheckPreviousPeriodAmountISNotZero}=    Run Keyword if    '${SubCategory_Expense_amt_fromTimeBasedComparision_ForPreviousPeriod}'!='0'    Log    Pass
+    Run Keyword if    ${CheckCurrentPeriodAmountISNotZero}    ${CheckPreviousPeriodAmountISNotZero}
+    ...    ELSE    Should be true    ${Percentage_amt_fromTimeBasedComparision}    ${CalculatedPercentage}
