@@ -7,5 +7,27 @@ AppendToList
     Append To List    ${L2}    x    y    z
 
 CreateList
+    @{names} =    Create List    First Name    Family Name    Email
+    Log    ${names}
+
+Get From List
     ${names} =    Create List    First Name    Family Name    Email
-    Log     ${names}
+    ${Var}=    Get From List    ${names}    2
+
+GetIndexFromList
+    ${names} =    Create List    First Name    Family Name    Email
+    ${Var}    Get Index From List    ${names}    Email
+
+SetToDictionary
+    ${D1}=    Create Dictionary
+    Set To Dictionary    ${D1}    key    value    Item    2
+    Set To Dictionary    ${D1}    key    value    Item2    3
+    ${var}=    Get from dictionary     ${D1}    Item2
+    log    ${var}
+
+ShouldContainMatch
+    Should Contain Match    ahsgddagdsjh    z
+
+Remove Values From List
+    @{names} =    Create List    a    b    c
+    Set List Value    ${names}    1    b
