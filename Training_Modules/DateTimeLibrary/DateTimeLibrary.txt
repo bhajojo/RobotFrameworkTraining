@@ -1,0 +1,75 @@
+*** Settings ***
+Library           DateTime
+
+*** Test Cases ***
+AddDateToTime
+    ${date} =    Add Time To Date    2014-05-28 12:05:03.111    7 days
+    Should Be Equal    ${date}    2014-06-04 12:05:03.111
+    ${date} =    Add Time To Date    2014-05-28 12:05:03.111    01:02:03:004
+    Should Be Equal    ${date}    2014-05-28 13:07:06.115
+
+AddTimeToTime
+    ${time} =    Add Time To Time    1 minute    42
+    Should Be Equal    ${time}    ${102}
+    ${time} =    Add Time To Time    3 hours 5 minutes    01:02:03    timer    exclude_millis=yes
+    Should Be Equal    ${time}    04:07:03
+
+ConvertDate
+    ${date} =    Convert Date    20140528
+    Comment    Should Be Equal    ${date}    2014-05-28 12:05:03.111
+
+GetCurrentDate
+    Comment    ${date} =    Get Current Date
+    Comment    Should Be Equal    ${date}    2018-02-21
+    Comment    ${date} =    Get Current Date    UTC
+    Comment    Should Be Equal    ${date}    2014-06-12 17:00:58.946
+    Comment    ${date} =    Get Current Date    increment=02:30:00
+    Comment    Should Be Equal    ${date}    2014-06-12 22:30:58.946
+    ${date} =    Get Current Date    UTC    - 6 hours
+    Comment    Should Be Equal    ${date}    2014-06-12 12:00:58.946
+    ${date} =    Get Current Date    result_format=datetime
+    Should Be Equal    ${date.year}    ${2018}
+    Should Be Equal    ${date.month}    ${2}
+
+ConvertTime
+    ${time} =    Convert Time    10 seconds
+    Should Be Equal    ${time}    ${10}
+    ${time} =    Convert Time    1:02:01    verbose
+    Should Be Equal    ${time}    1 hour 1 second
+    ${time} =    Convert Time    ${3661.5}    timer    exclude_milles=yes
+    Should Be Equal    ${time}    01:01:02
+
+SubstractDateFromDate
+    Get Text    record1
+    Get Text    Rcord 2
+    ${time} =    Subtract Date From Date    2014-05-28 12:05:52    2014-05-27 12:05:10
+    Comment    Should Be Equal    ${time}    ${42}
+
+SubstractTimeFRomDate
+    ${date} =    Subtract Time From Date    2014-06-04 12:05:03.111    7 days
+    Should Be Equal    ${date}    2014-05-28 12:05:03.111
+    ${date} =    Subtract Time From Date    2014-05-28 13:07:06.115    01:02:03:004
+    Should Be Equal    ${date}    2014-05-28 12:05:03.111
+
+SubstractTimeFromTime
+    ${time} =    Subtract Time From Time    00:02:30    100
+    Should Be Equal    ${time}    ${50}
+
+PythonDateTime
+    Comment    {datetime} =    Get Current Date
+    ${datetime} =    Convert Date    2014-06-11 10:07:42.123    datetime
+    Should Be Equal As Integers    ${datetime.year}    2014
+    Should Be Equal As Integers    ${datetime.month}    6
+    Should Be Equal As Integers    ${datetime.day}    11
+    Should Be Equal As Integers    ${datetime.hour}    10
+    Should Be Equal As Integers    ${datetime.minute}    7
+    Should Be Equal As Integers    ${datetime.second}    42
+    Should Be Equal As Integers    ${datetime.microsecond}    123000
+    Set Variable    ${var}    Bharat1234
+    Should Be Equal As Strings    ${var}    Bharat1234
+
+CustomTimeStamp
+    ${date} =    Convert Date    28.05.2014 12:05    date_format=%d.%m.%Y %H:%M
+    Should Be Equal    ${date}    2014-05-28 12:05:00.000
+    ${date} =    Convert Date    ${date}    result_format=%d.%m.%Y
+    Should Be Equal    ${date}    28.05.2014

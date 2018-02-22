@@ -1,0 +1,38 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           Selenium2Library
+Library           ExcelLibrary
+Resource          InputForms_Resource.txt
+
+*** Test Cases ***
+Verify Simple Form Objects_FF
+    [Tags]    SimpleForm
+    [Setup]    Kill Process
+    LaunchWebApplication    FF
+    OpenInputForms
+    VerifyUserInputInField    1
+    Comment    VerifyUserInputInField    2
+    [Teardown]    Kill Process
+
+Verify Simple Form Objects_Chrome
+    [Tags]    SimpleForm
+    [Setup]    Kill Process
+    LaunchWebApplication    Chrome
+    [Teardown]    Kill Process
+
+Verify Simple Form Objects_IE
+    [Tags]    SimpleForm1
+    [Setup]    Kill Process
+    LaunchWebApplication    IE
+    [Teardown]    Kill Process
+
+Verify_Simple Form Objects_Parametrized
+    [Setup]    kill Process
+    LaunchWebApplication    ${myVar}
+    OpenInputForms
+    VerifyUserInputInField    1
+    [Teardown]    Kill Process
+
+BuiitInExample
+    &{dict} =    Create Dictionary    key=value    foo=bar    \    \    # key=value syntax
+    log    ${dict}

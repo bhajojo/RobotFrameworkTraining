@@ -4,7 +4,7 @@ Resource          common_resources.txt
 Library           String
 Library           OperatingSystem
 Library           Process
-Variables         objRepPFM.py
+Variables         objRepTraining.py
 Library           ExcelLibrary
 
 *** Keywords ***
@@ -29,29 +29,14 @@ Login_Android_Chrome
     Builtin.Log    Login successful
     AppiumLibrary.Capture Page Screenshot
 
-Login_Web
+LaunchWebApplication
     [Arguments]    ${BROWSER_NAME}
     [Documentation]    Launch the Browser based on the parameter
     Log    ${EXECDIR}
-    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
+    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
     @{List}=    Get Row Values    Global    1
     open Browser    ${List[0][1]}    ${BROWSER_NAME}
     Maximize Browser Window
-    Sleep    2s
-    Capture Page Screenshot
-    Click Element    ${objLoginContinueButton}
-    Capture Page Screenshot
-    Sleep    1s
-    Click Element    ${objLoginContinueButton}
-    Sleep    1s
-    Click Element    ${objLoginAgreeCheckbox}
-    Capture Page Screenshot
-    Sleep    1s
-    Click Element    ${objLoginDoneButton}
-    Wait Until Element Is Visible    ${oblLoginPageAccountSelected}    20S
-    Page Should Contain Element    ${objLoginPageMonthDefaultSelection}
-    Builtin.Log    Login successful
-    Capture Page Screenshot
     [Teardown]
 
 Login_IPAD_SAFARI
@@ -68,6 +53,7 @@ Login_IPAD_SAFARI
 
 Kill Process
     Close All Browsers
+    Run    taskkill /IM "geckodriver.exe" /T /F
 
 Button_Click
     [Arguments]    ${Button_Desc}    # description of buttons xPath
@@ -79,32 +65,11 @@ Random_Number_Generator
     ${Var}    Generate Random String    2    [NUMBERS]
     ${Num1}    Convert To Integer    ${Var}
     ${Num2}    Generate Random String    2    [NUMBERS]
-    ${Amount}    Set Variable    ${Num1},${Num2}
-    [Return]    ${Amount}
-
-Click_Logout
-    Click Element    ${objLogout}
-    Click Element    ${objcfmlogout}
-    Click Element    ${objlogoutlogin}
-    Close Browser
+    ${returnvalue}    Set Variable    ${Num1},${Num2}
+    [Return]    ${returnvalue}
 
 Set Browser Wait
     Set Selenium Implicit Wait    15s
-
-Verify_Help
-    [Arguments]    ${objHelp}    ${objHelpPageHeaders}    # Help Page Validations
-    Page Should Contain Element    ${objHelp}
-    Click Element    ${objHelp}
-    Sleep    5s
-    ${Win_Titles}    Get Window Titles
-    Select Window    title=undefined
-    Sleep    5s
-    @{Words}    Split String    ${objHelpPageHeaders}    :
-    : FOR    ${var}    IN    @{Words}
-    \    Page Should Contain Element    ${var}
-    Close Window
-    Select Window
-    Capture Page Screenshot
 
 NextPreviousButtonFunctionality
     wait until page contains element    xpath=.//ul/li[1]    10s
@@ -125,64 +90,6 @@ NextPreviousButtonFunctionality
     Run keyword if    ${Count}>20    CheckRowsMoreThanTwenty
     Run keyword if    ${Count}==20    LOG    No Next previous functionality available
     Capture Page Screenshot
-
-VerificationForAscendingAnd DecendingDateSorting
-    LOG    Sorting for Ascending and Descending Date
-    Select From List By Label    ${objMailSentDropdownList}    By ascending date
-    Capture Page Screenshot
-    ${count}=    get matching xpath count    ${objMailSentDates}
-    ${RowCount}=    set variable    ${count}
-    LOG    ${count}
-    LOG    ----
-    : FOR    ${count}    IN RANGE    ${count}
-    \    Capture Page Screenshot
-    \    ${Rowcount}=    EVALUATE    ${Rowcount}-1
-    \    LOG    ${Rowcount}
-    \    Run keyword if    ${Rowcount}==1    EXIT FOR LOOP
-    \    ${DatewithTime1}=    Get TEXT    xpath=.//*[@id='null']/ul/li[${count}+1]/a/span[2]
-    \    LOG    [${count}+1]
-    \    ${DatewithTime2}=    Get TEXT    xpath=.//*[@id='null']/ul/li[${count}+2]/a/span[2]
-    \    ${DateInRowPreviousS}=    get substring    ${DatewithTime1}    0    10
-    \    ${DateInRowNextS}=    get substring    ${DatewithTime2}    0    10
-    \    ${DateInRowPrevious}=    Convert Date    ${DateInRowPreviousS}    date_format=%d.%m.%Y
-    \    ${DateInRowNext}=    Convert Date    ${DateInRowNextS}    date_format=%d.%m.%Y
-    \    ${DateFlag}=    subtract date from date    ${DateInRowNext}    ${DateInRowPrevious}
-    \    ${EXITFlag}=    Set variable    0
-    \    Run keyword if    ${DateFlag}>0.0 or ${DateFlag}==0.0    LOG    Correct Sorting
-    \    ...    ELSE    ${EXITFlag}==1
-    \    Run keyword if    ${EXITFlag}==1    LOG    Wrong Sorting
-    \    Run keyword if    ${EXITFlag}==1    EXIT FOR LOOP
-    \    Capture Page Screenshot
-    Capture Page Screenshot
-    Select From List By Label    ${objMailSentDropdownList}    By descending date
-    Capture Page Screenshot
-    ${count}=    get matching xpath count    ${objMailSentDates}
-    ${RowCount}=    set variable    ${count}
-    : FOR    ${count}    IN RANGE    ${count}
-    \    Capture Page Screenshot
-    \    ${Rowcount}=    EVALUATE    ${Rowcount}-1
-    \    LOG    ${Rowcount}
-    \    LOG    TEST
-    \    LOG    Date1
-    \    Capture Page Screenshot
-    \    Run keyword if    ${Rowcount}==1    EXIT FOR LOOP
-    \    ${DatewithTime1}=    Get TEXT    xpath=.//*[@id='null']/ul/li[${count}+1]/a/span[2]
-    \    LOG    ${count}
-    \    ${DatewithTime2}=    Get TEXT    xpath=.//*[@id='null']/ul/li[${count}+2]/a/span[2]
-    \    Capture Page Screenshot
-    \    ${DateInRowPreviousS}=    get substring    ${DatewithTime1}    0    10
-    \    ${DateInRowNextS}=    get substring    ${DatewithTime2}=    0    10
-    \    ${DateInRowPrevious}=    Convert Date    ${DateInRowPreviousS}    date_format=%d.%m.%Y
-    \    ${DateInRowNext}=    Convert Date    ${DateInRowNextS}    date_format=%d.%m.%Y
-    \    ${DateFlag}=    subtract date from date    ${DateInRowPrevious}    ${DateInRowNext}
-    \    ${EXITFlag}=    Set variable    0
-    \    Run keyword if    ${DateFlag}>0 or ${DateFlag}==0    LOG    Correct Sorting
-    \    ...    ELSE    ${EXITFlag}==1
-    \    Run keyword if    ${EXITFlag}==1    LOG    Wrong Sorting
-    \    Run keyword if    ${EXITFlag}==1    EXIT FOR LOOP
-    \    Capture Page Screenshot
-    Capture Page Screenshot
-    [Teardown]
 
 Launch_URL
     [Arguments]    ${URL}    ${BROWSER_NAME}
@@ -208,3 +115,9 @@ DB2_Call
 
 Kill_Process_Android
     AppiumLibrary.Close All Applications
+
+PrintMessageStart
+    Log    Test Exeution \ Strating
+
+PrintMessageEnd
+    Log    Test Execution Ends

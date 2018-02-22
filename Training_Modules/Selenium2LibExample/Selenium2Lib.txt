@@ -1,0 +1,94 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           Selenium2Library
+
+*** Test Cases ***
+Selenium2LibHandleAlert
+    [Setup]    Kill Process
+    HandleAlert
+    HandleJavaScriptAlert
+    CheckBoxSelection
+    ElementConditionsCheck
+    Comment    PageShouldContain
+    [Teardown]    Kill Process
+
+Selenium2LibHandleJavaScriptAlert
+    [Setup]    Kill Process
+    HandleJavaScriptAlert
+    [Teardown]    Kill Process
+
+Selenium2LibCheckBoxSelection
+    [Setup]    Kill Process
+    CheckBoxSelection
+    [Teardown]    Kill Process
+
+Selenium2LibHandleElementConditionCheck
+    [Setup]    Kill Process
+    HandleAlert
+    [Teardown]    Kill Process
+
+Selenium2LibPageContainElement
+    [Setup]    Kill Process
+    PageShouldContain
+    [Teardown]    Kill Process
+
+LoopExampleWithSelenium2Lib
+    [Setup]    Kill Process
+    HandleAlert
+    ElementConditionsCheck
+    ${NoofElement}    Get Matching Xpath Count    .//*[@id='contact_form']//div[@class='radio']
+    Log    ${NoofElement}
+    : FOR    ${icounter}    IN RANGE    1    ${NoofElement}+1
+    \    Capture Page Screenshot
+    \    Click Element    xpath=.//*[@id='contact_form']//div[@class='radio'][${icounter}]
+    [Teardown]    Kill Process
+
+*** Keywords ***
+HandleAlert
+    LaunchWebApplication    FF
+    Click Element    xpath=//*[@id="navbar-brand-centered"]/ul[2]/li[2]/a
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[2]/li[2]/ul/li[2]/a
+    Click Element    xpath= html/body/div[2]/div/div[2]/div[1]/div/div/div[2]/a
+    Click Element    xpath=.//*[@id='myModal0']/div/div/div[4]/a[1]
+    Comment    Selenium2Library.Handle Alert
+    Comment    Alert Should Be Present
+    Comment    VerifyPageObjects    ${objTimeBasedComparisonSectionHeading}
+    [Teardown]
+
+HandleJavaScriptAlert
+    sleep    5s
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[2]/li[2]/a
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[2]/li[2]/ul/li[5]/a
+    Click Element    xpath=.//*[@id='easycont']/div/div[2]/div[1]/div[2]/button
+    Capture Page Screenshot
+    Selenium2Library.Handle Alert
+    Capture Page Screenshot
+    Alert Should Not Be Present
+
+CheckBoxSelection
+    Sleep    5s
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[1]/li[1]/a
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[1]/li[1]/ul/li[2]/a
+    Click Element    xpath=.//*[@id='isAgeSelected']
+    Capture Page Screenshot
+    Checkbox Should Be Selected    xpath=.//*[@id='isAgeSelected']
+    Click Element    xpath=.//*[@id='isAgeSelected']
+    Checkbox Should Not Be Selected    xpath=.//*[@id='isAgeSelected']
+    Capture Page Screenshot
+
+ElementConditionsCheck
+    Sleep    5s
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[1]/li[1]/a
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[1]/li[1]/ul/li[5]/a
+    Element Should Be Enabled    xpath=.//*[@id='contact_form']/fieldset/div[13]/div/button
+    Element Should Be Visible    xpath=.//*[@id='contact_form']/fieldset/div[10]/div/div[1]/label/input
+    Element Should Contain    xpath=.//*[@id='contact_form']/fieldset/div[11]/label    Project Description
+    Element Text Should Be    xpath=html/body/div[2]/div/div[2]/h2    Input form with validations
+
+PageShouldContain
+    Page Should Contain Element    xpath=.//*[@id='contact_form']/fieldset/div[1]/label
+    Page Should Contain Button    xpath=.//*[@id='contact_form']/fieldset/div[13]/div/button
+    Page Should Not Contain    TestMessage
+    Page Should Contain Link    xpath=.//*[@id='treemenu']/li/ul/li[2]/a
+
+VerifyPageElement

@@ -1,0 +1,5 @@
+*** Settings ***
+Library           Selenium2Library
+Resource          ../../Common_Resources/common_resources.txt
+
+*** Keywords ***

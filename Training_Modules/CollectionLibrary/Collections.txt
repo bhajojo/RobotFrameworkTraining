@@ -1,0 +1,11 @@
+*** Settings ***
+Library           Collections
+
+*** Test Cases ***
+AppendToList
+    Append To List    ${L1}    xxx
+    Append To List    ${L2}    x    y    z
+
+CreateList
+    ${names} =    Create List    First Name    Family Name    Email
+    Log     ${names}

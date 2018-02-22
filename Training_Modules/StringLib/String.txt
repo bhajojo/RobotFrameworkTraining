@@ -1,0 +1,55 @@
+*** Settings ***
+Library           String
+
+*** Test Cases ***
+ConvertToLowerCase
+    ${str1} =    Convert To Lowercase    ABC
+    ${str2} =    Convert To Lowercase    1A2c3D
+    Should Be Equal    ${str1}    abc
+    Should Be Equal    ${str2}    1a2c3d
+
+GenerateRandomString
+    ${ret} =    Generate Random String
+    ${low} =    Generate Random String    12    [LOWER]
+    ${bin} =    Generate Random String    8    01
+    ${hex} =    Generate Random String    4    [NUMBERS]abcdef
+
+GetLinesContainingString
+    ${result}    Set Variable    An example which is great
+    ${lines} =    Get Lines Containing String    ${result}    An example
+    ${ret} =    Get Lines Containing String    ${result}    FAIL    case-insensitive
+
+GetSubstring
+    ${string}    Set Variable    Learning RobotFramework
+    ${ignore first} =    Get Substring    ${string}    1
+    ${ignore last} =    Get Substring    ${string}    \    -1
+    ${5th to 10th} =    Get Substring    ${string}    4    10
+    ${first two} =    Get Substring    ${string}    \    1
+    ${last two} =    Get Substring    ${string}    -2
+
+SplitString
+    ${string}    Set Variable    Learning robot , with trainer
+    @{words} =    Split String    ${string}
+    @{words} =    Split String    ${string}    ,
+    Log     ${words[1]}
+    Log     ${words[0]}
+
+StripString
+    ${stripped}=    Strip String    ${SPACE}Hello${SPACE}
+    Should Be Equal    ${stripped}    Hello
+    ${stripped}=    Strip String    ${SPACE}Hello${SPACE}    mode=left
+    Should Be Equal    ${stripped}    Hello${SPACE}
+    ${stripped}=    Strip String    aabaHelloeee    characters=abe
+    Should Be Equal    ${stripped}    Hello
+
+ReplaceString
+    {str} =    Replace String    Hello, world!    world    tellus
+    Should Be Equal    ${str}    Hello, tellus!
+    ${str} =    Replace String    Hello, world!    l    ${EMPTY}    count=1
+    Should Be Equal    ${str}    Helo, world!
+
+RemveString
+    ${str} =    Remove String    Robot Framework    work
+    Should Be Equal    ${str}    Robot Frame
+    ${str} =    Remove String    Robot Framework    o    bt
+    Should Be Equal    ${str}    R Framewrk

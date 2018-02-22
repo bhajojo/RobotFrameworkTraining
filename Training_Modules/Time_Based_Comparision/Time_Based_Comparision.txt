@@ -11,7 +11,7 @@ Resource          Time_Based_Comparision_Resources.txt
 *** Test Cases ***
 Time_Based_Comparision_FF
     [Setup]    Kill Process
-    Login_Web    FF
+    LaunchWebApplication    FF
     Sleep    2s
     Page Should contain element    ${objTimeBasedComparisonSectionHeading}
     Comparision_For_Previous_Period

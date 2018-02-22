@@ -1,0 +1,34 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           Selenium2Library
+
+*** Keywords ***
+OpenInputForms
+    [Documentation]    This Keyword is created to open the Tabs Input forma and Vrify the title of the page
+    Wait Until Element Is Visible    xpath=.//*[@id='navbar-brand-centered']/ul[1]/li[1]/a    20s
+    Click Element    xpath=.//*[@id='navbar-brand-centered']/ul[1]/li[1]/a
+    Click Element    xpath=.//*[@id='navbar-brand-centered']//a[text()='Simple Form Demo']
+    Wait Until Element Is Visible    xpath=.//*[@id='easycont']//div[text()='Single Input Field']    20s
+    Page Should Contain Element    xpath=.//*[@id='easycont']//div[text()='Single Input Field']
+    Capture Page Screenshot
+
+VerifyUserInputInField
+    [Arguments]    ${Var}
+    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    @{InputFormValue}=    Get Row Values    InputForm    ${Var}
+    Comment    @{InputFormValue2}=    Get Row Values    InputForm    ${Var}
+    @{InputFormValue2}=    Get Column Values    InputForm    1
+    ${Var}    Read Cell Data By Name    InputForm    A2
+    log    ${Var}
+    log    ${InputFormValue[0][1]}
+    log    ${InputFormValue[1][1]}
+    log    ${InputFormValue[2][1]}
+    log    ${InputFormValue[3][1]}
+    log    ${InputFormValue2[0][1]}
+    @{InputFormObject}    Get WebElements    xpath=.//*[@id='user-message']
+    Comment    log    ${InputFormObject[][]}
+    Input Text    xpath=.//input[@id='user-message']    ${InputFormValue[0][1]}
+    Capture Page Screenshot
+    Click Element    xpath=.//*[@id='get-input']/button
+
+Print Message No Results
