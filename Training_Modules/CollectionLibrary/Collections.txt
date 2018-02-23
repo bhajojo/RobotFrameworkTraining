@@ -2,12 +2,13 @@
 Library           Collections
 
 *** Test Cases ***
-AppendToList
-    Append To List    ${L1}    xxx
-    Append To List    ${L2}    x    y    z
-
 CreateList
     @{names} =    Create List    First Name    Family Name    Email
+    Log    ${names}
+    Insert Into List    ${names}    3    1
+    Insert Into List    ${names}    4    2
+    ${Var}=    Get From List    ${names}    3
+    List Should Contain Value    ${names}    Family Name1
     Log    ${names}
 
 Get From List
@@ -20,10 +21,12 @@ GetIndexFromList
 
 SetToDictionary
     ${D1}=    Create Dictionary
-    Set To Dictionary    ${D1}    key    value    Item    2
-    Set To Dictionary    ${D1}    key    value    Item2    3
-    ${var}=    Get from dictionary     ${D1}    Item2
-    log    ${var}
+    Set To Dictionary    ${D1}    key    value    Item1    1
+    Set To Dictionary    ${D1}    key    value    Item2    2
+    Set To Dictionary    ${D1}    key    value    Item3    3
+    ${var}=    Get from dictionary    ${D1}    Item2
+    ${Values}=    Get Dictionary Values    ${D1}
+    ${keys} =    Get Dictionary Keys    ${D1}
 
 ShouldContainMatch
     Should Contain Match    ahsgddagdsjh    z
@@ -31,3 +34,21 @@ ShouldContainMatch
 Remove Values From List
     @{names} =    Create List    a    b    c
     Set List Value    ${names}    1    b
+    Remove Values From List    ${names}    a    b
+    Insert Into List    ${names}    3    1
+    Log    ${names}
+
+CombineLists
+    @{names} =    Create List    First Name    Family Name    Email
+    @{Surnames} =    Create List    Last name    Last Family name    Last Email
+    ${L3}=    Combine Lists    ${names}    ${Surnames}
+    Log    ${L3}
+
+CountsValuesInList
+    @{names} =    Create List    First Name    Family Name    Email    Email
+    ${Var}=    Count Values In List    ${names}    Email
+
+ListsShouldBeEqual
+    @{names} =    Create List    First Name    Family Name    Email
+    @{names1} =    Create List    First Name    Family Name    Email1
+    Lists Should Be Equal    ${names}    ${names1}
