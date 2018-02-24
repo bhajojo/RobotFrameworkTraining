@@ -1,0 +1,9 @@
+*** Settings ***
+Library           DatabaseLibrary
+
+*** Test Cases ***
+DatabaseLibrary
+    Connect To Database    ibm_db_dbi    SM10    DB2ADMIN    12Setup21    10.32.153.40    50000
+    query    Select NR from TMAILBOX where Status ='U' FETCH FIRST ROW ONLY
+    Execute Sql Script    Select NR from TMAILBOX where Status ='U' FETCH FIRST ROW ONLY
+    Execute Sql String    Select NR from TMAILBOX where Status ='U' FETCH FIRST ROW ONLY
