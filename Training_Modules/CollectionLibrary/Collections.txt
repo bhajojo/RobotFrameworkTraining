@@ -3,6 +3,7 @@ Library           Collections
 
 *** Test Cases ***
 CreateList
+    [Tags]    FF
     @{names} =    Create List    First Name    Family Name    Email
     Log    ${names}
     Insert Into List    ${names}    3    1
@@ -15,6 +16,7 @@ CreateList
     Log    ${names}
 
 Get From List
+    [Tags]
     ${names} =    Create List    First Name    Family Name    Email
     ${Var}=    Get From List    ${names}    2
 
