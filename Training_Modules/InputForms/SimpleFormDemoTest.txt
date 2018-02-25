@@ -10,7 +10,6 @@ Verify Simple Form Objects_FF
     [Setup]    Kill Process
     LaunchWebApplication    FF
     OpenInputForms
-    VerifyUserInputInField    1
     Comment    VerifyUserInputInField    2
     [Teardown]    Kill Process
 
