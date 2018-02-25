@@ -35,7 +35,7 @@ ConvertTime
     ${time} =    Convert Time    10 seconds
     Should Be Equal    ${time}    ${10}
     ${time} =    Convert Time    1:02:01    verbose
-    Should Be Equal    ${time}    1 hour 1 second
+    Should Be Equal    ${time}    1 hour 2 minutes 1 second
     ${time} =    Convert Time    ${3661.5}    timer    exclude_milles=yes
     Should Be Equal    ${time}    01:01:02
 
@@ -65,7 +65,7 @@ PythonDateTime
     Should Be Equal As Integers    ${datetime.minute}    7
     Should Be Equal As Integers    ${datetime.second}    42
     Should Be Equal As Integers    ${datetime.microsecond}    123000
-    Set Variable    ${var}    Bharat1234
+    ${var}    Set Variable    Bharat1234
     Should Be Equal As Strings    ${var}    Bharat1234
 
 CustomTimeStamp
