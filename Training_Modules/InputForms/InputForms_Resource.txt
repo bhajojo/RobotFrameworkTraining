@@ -14,7 +14,7 @@ OpenInputForms
 
 VerifyUserInputInField
     [Arguments]    ${Var}
-    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    Open Excel    ${EXECDIR}/Test_Data/GlobalTestData.xls
     @{InputFormValue}=    Get Row Values    InputForm    ${Var}
     Comment    @{InputFormValue2}=    Get Row Values    InputForm    ${Var}
     @{InputFormValue2}=    Get Column Values    InputForm    1
@@ -30,5 +30,15 @@ VerifyUserInputInField
     Input Text    xpath=.//input[@id='user-message']    ${InputFormValue[0][1]}
     Capture Page Screenshot
     Click Element    xpath=.//*[@id='get-input']/button
+    ${Message}    Get Text    xpath=.//span[@id='display']
+    [Return]    ${Message}
 
 Print Message No Results
+
+VerifyTwoInputFields
+    Input Text    xpath=.//input[@id='sum1']    10
+    Input Text    xpath=.//*[@id='sum2']    20
+    Click Button    xpath=.//*[@id='gettotal']/button
+    ${Sum}    Get Text    xpath=.//span[@id='displayvalue']
+    Should Be Equal As Integers    ${Sum}    30
+    [Return]    ${Sum}

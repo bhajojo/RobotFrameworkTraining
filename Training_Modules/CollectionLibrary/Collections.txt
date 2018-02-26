@@ -16,7 +16,7 @@ CreateList
     Log    ${names}
 
 Get From List
-    [Tags]
+    [Tags]    FF2
     ${names} =    Create List    First Name    Family Name    Email
     ${Var}=    Get From List    ${names}    2
 

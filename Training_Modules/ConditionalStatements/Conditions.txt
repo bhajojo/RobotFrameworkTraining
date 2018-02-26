@@ -1,0 +1,27 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           Selenium2Library
+Library           ExcelLibrary
+Resource          ../InputForms/InputForms_Resource.txt
+
+*** Test Cases ***
+RunKeywordIF
+    LaunchWebApplication    FF
+    OpenInputForms
+    ${Var}    VerifyUserInputInField    1
+    Run Keyword if    '${Var}'=='Learning Robot Framework'    VerifyTwoInputFields
+
+RunKeywordIfElse
+    LaunchWebApplication    FF
+    OpenInputForms
+    ${Var}    VerifyUserInputInField    1
+    Run Keyword if    '${Var}'=='Learning Robot Framework1'    VerifyTwoInputFields    Else    Log    Run Keyword else
+
+RunKeywordAndeturnStatu
+    ${Passed}=    Run Keyword And Return Status    LaunchWebApplication    FF
+    log    ${Passed}
+
+RunKeywords
+    Comment    LaunchWebApplication    FF
+    Run keywords    Log    a
+    ...    AND    Log     b
