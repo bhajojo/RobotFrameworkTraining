@@ -1,0 +1,10 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           Selenium2Library
+Library           ExcelLibrary
+Resource          ../InputForms/InputForms_Resource.txt
+
+*** Test Cases ***
+ForLoop
+    LaunchWebApplication    FF
+    OpenInputForms

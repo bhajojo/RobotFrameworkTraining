@@ -42,3 +42,9 @@ VerifyTwoInputFields
     ${Sum}    Get Text    xpath=.//span[@id='displayvalue']
     Should Be Equal As Integers    ${Sum}    30
     [Return]    ${Sum}
+
+ForLoopExample
+    ${/}
+    :FOR    ${ELEMENT}    IN    @{words}
+    \    ${Label_Shortcut}=    get text    xpath=//*[@id='myshortcuts_save']/ul/li[${counter}]//div[@class='list-item-left list-item-secondary']
+    \    should be equal as strings    ${ELEMENT}    ${Label_Shortcut}
