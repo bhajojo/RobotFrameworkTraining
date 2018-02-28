@@ -20,18 +20,13 @@ VerifyUserInputInField
     @{InputFormValue2}=    Get Column Values    InputForm    1
     ${Var}    Read Cell Data By Name    InputForm    A2
     log    ${Var}
-    log    ${InputFormValue[0][1]}
-    log    ${InputFormValue[1][1]}
-    log    ${InputFormValue[2][1]}
-    log    ${InputFormValue[3][1]}
-    log    ${InputFormValue2[0][1]}
     @{InputFormObject}    Get WebElements    xpath=.//*[@id='user-message']
     Comment    log    ${InputFormObject[][]}
     Input Text    xpath=.//input[@id='user-message']    ${InputFormValue[0][1]}
     Capture Page Screenshot
     Click Element    xpath=.//*[@id='get-input']/button
-    ${Message}    Get Text    xpath=.//span[@id='display']
-    [Return]    ${Message}
+    ${Bharat}    Get Text    xpath=.//span[@id='display']
+    [Return]    ${Bharat}
 
 Print Message No Results
 
@@ -42,3 +37,15 @@ VerifyTwoInputFields
     ${Sum}    Get Text    xpath=.//span[@id='displayvalue']
     Should Be Equal As Integers    ${Sum}    30
     [Return]    ${Sum}
+
+EnterValuesin2Fields
+    ${var}    Get Element Count    xpath=.//*[@id='gettotal']//input
+    : FOR    ${iCount}    IN RANGE    1    ${var}+1
+    \    Log    ${iCount}
+    \    Input Text    xpath=.//input[@id='sum${iCount}']    10
+
+ForEachParametrized
+    [Arguments]    ${Var1}    ${Var2}
+    :FOR    ${Var}     IN     ${Var1}    ${Var2}
+    \    Log    ${Var}
+    \    Input Text    xapth    ${Var}
