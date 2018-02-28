@@ -57,5 +57,5 @@ CountsValuesInList
 
 ListsShouldBeEqual
     @{names} =    Create List    First Name    Family Name    Email
-    @{names1} =    Create List    First Name    Family Name    Email1
+    @{names1} =    Create List    First Name    Family Name    Email
     Lists Should Be Equal    ${names}    ${names1}
