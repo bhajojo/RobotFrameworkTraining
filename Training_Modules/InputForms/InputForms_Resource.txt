@@ -36,15 +36,18 @@ VerifyTwoInputFields
     Click Button    xpath=.//*[@id='gettotal']/button
     ${Sum}    Get Text    xpath=.//span[@id='displayvalue']
     Should Be Equal As Integers    ${Sum}    30
+    Input Text    css=#user-message[type='text']    50
+    ${Var}    Set Variable    0 .Value Found
+    ${Var1}    Split String    ${Var}    .
+    Log    ${Var1[1]}
     [Return]    ${Sum}
 
-<<<<<<< HEAD
 ForLoopExample
     ${/}
-    :FOR    ${ELEMENT}    IN    @{words}
+    : FOR    ${ELEMENT}    IN    @{words}
     \    ${Label_Shortcut}=    get text    xpath=//*[@id='myshortcuts_save']/ul/li[${counter}]//div[@class='list-item-left list-item-secondary']
     \    should be equal as strings    ${ELEMENT}    ${Label_Shortcut}
-=======
+
 EnterValuesin2Fields
     ${var}    Get Element Count    xpath=.//*[@id='gettotal']//input
     : FOR    ${iCount}    IN RANGE    1    ${var}+1
@@ -53,7 +56,6 @@ EnterValuesin2Fields
 
 ForEachParametrized
     [Arguments]    ${Var1}    ${Var2}
-    :FOR    ${Var}     IN     ${Var1}    ${Var2}
+    : FOR    ${Var}    IN    ${Var1}    ${Var2}
     \    Log    ${Var}
     \    Input Text    xapth    ${Var}
->>>>>>> 84bc0558e7fec81750920168b0591d8b49959eee
