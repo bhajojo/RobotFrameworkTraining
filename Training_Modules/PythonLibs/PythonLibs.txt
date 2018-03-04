@@ -1,0 +1,13 @@
+*** Settings ***
+Library           ExampleLibrary
+Library           ExtendedSelenium
+
+*** Test Cases ***
+CallPythonLibs
+    Print Hello
+    Clear Counter
+    PrintHello1
+    PrintHEllo2
+
+ExtendSeleniumLibrary
+    Title Should Start With    Selenium Easy
