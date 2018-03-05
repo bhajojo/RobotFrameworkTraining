@@ -1,0 +1,98 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           Selenium2Library
+Library           ExcelLibrary
+Resource          ../InputForms/InputForms_Resource.txt
+Library           Collections
+
+*** Test Cases ***
+RunKeywordIF
+    LaunchWebApplication    FF
+    OpenInputForms
+    ${Bharat}    VerifyUserInputInField    1
+    Run Keyword if    '${Bharat}'=='Learning Robot Framework'    VerifyTwoInputFields
+    Run Keyword if    '${Bharat}'=='Learning Robot Framework1'    VerifyTwoInputFields1
+
+RunKeywordIfElse
+    LaunchWebApplication    FF
+    OpenInputForms
+    ${Var}    VerifyUserInputInField    1
+    Run Keyword if    '${Var}'=='Learning Robot Framework1'    VerifyTwoInputFields    Else    \    Run Keyword else
+
+RunKeywordAndeturnStatu
+    ${Passed}=    Run Keyword And Return Status    LaunchWebApplication    TR
+    Run Keyword IF    '${Passed}'=='true'    log    Pass    else    Log    Fail
+
+RunKeywords
+    Comment    LaunchWebApplication    FF
+    Run keywords    Log    a
+    ...    AND    Log    b
+    ...    AND    Log    c
+
+ForLoop
+    LaunchWebApplication    FF
+    OpenInputForms
+    EnterValuesin2Fields
+
+ForLoopExcelReadingData
+    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    @{ListRowVal}=    Get Row Values    ForLoop    2
+    @{ListColVal}=    Get Column Values    ForLoop    1
+    : FOR    ${ListRow}    IN    @{ListRowVal}
+    \    Log    ${ListRow}
+    Comment    : FOR    ${ColRow}    IN    @{ListColVal}
+    \    Comment    Log    ${ColRow}
+
+ExcelWritingData
+    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    Put String To Cell    ExcelExample    0    0    Hello
+    Put String To Cell    ExcelExample    1    0    Hello1
+    Put String To Cell    ExcelExample    2    0    Hello2
+    Save Excel    ExcelExample.xls    True
+    Comment    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+
+ForLoopTable
+    LaunchWebApplication    FF
+    Click Element    xpath=//*[@id="navbar-brand-centered"]/ul[1]/li[3]/a
+    Click Element    xpath=//*[@id="navbar-brand-centered"]/ul[1]/li[3]/ul/li[1]/a
+    ${Var}    Get Element Count    xpath=//*[@id="myTable"]//tr
+    : FOR    ${iCount}    IN RANGE    1    ${Var}+1
+    \    ${Var3}    Get Text    xpath=//*[@id="myTable"]//tr[${iCount}]//td[1]
+    \    ${Var4}    Get Text    xpath=//*[@id="myTable"]//tr[${iCount}]//td[2]
+    \    Log    ${Var3}
+    \    Log    ${Var4}
+
+ForLoopComparingLists
+    [Setup]    Kill Process
+    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    @{List}=    Get Column Values    ExcelExample    0
+    ${ListFromExcel}    Create List
+    Log    ${List[0][1]}
+    Log    ${List[1][1]}
+    Log    ${List[2][1]}
+    :FOR    ${ListElement}    IN RANGE    0    5
+    \    Append to List    ${ListFromExcel}    ${List[${ListElement}][1]}
+    Log    ${ListFromExcel}
+    LaunchWebApplication    FF
+    Click Element    xpath=//*[@id="navbar-brand-centered"]/ul[1]/li[3]/a
+    Click Element    xpath=//*[@id="navbar-brand-centered"]/ul[1]/li[3]/ul/li[1]/a
+    ${names} =    Create List
+    ${Var}    Get Element Count    xpath=//*[@id="myTable"]//tr[contains(@style,'table-row')]
+    :FOR    ${iCount}    IN RANGE    1    ${Var}+1
+    \    ${Var3}    Get Text    xpath=//*[@id="myTable"]//tr[${iCount}]//td[1]
+    \    Append To List    ${names}    ${Var3}
+    log    ${names}
+    Lists Should Be Equal    ${names}    ${ListFromExcel}
+    [Teardown]    Kill Process
+
+ForEachLoop
+    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    @{List}=    Get Column Values    ExcelExample    0
+    ${ListFromExcel}    Create List
+    :FOR    ${ListElement}    IN RANGE    0
+    \    Append to List    ${ListFromExcel}    ${List[${ListElement}][1]}
+    :FOR    ${icount}    IN    ${List[0][1]}    ${List[1][1]}
+    \    Log    ${icount}
+
+ForEachParametrized
+    ForEachParametrized    I am Learning    Robot Framework

@@ -1,0 +1,15 @@
+*** Settings ***
+Resource          ../../Common_Resources/common_resources.txt
+Library           Selenium2Library
+Library           ExcelLibrary
+Resource          ../InputForms/InputForms_Resource.txt
+Library           Collections
+
+*** Test Cases ***
+Locators Example
+    LaunchWebApplication    FF
+    Click Element    xpath=//*[@id="navbar-brand-centered"]/ul[1]/li[3]/a
+    Click Element    xpath=//*[@id="navbar-brand-centered"]/ul[1]/li[3]/ul/li[1]/a
+    Page Should Contain Element    css=#myTable tr:nth-child(1)
+    OpenInputForms
+    VerifyTwoInputFields
