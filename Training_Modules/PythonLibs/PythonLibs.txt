@@ -1,6 +1,7 @@
 *** Settings ***
 Library           ExampleLibrary
 Library           ExtendedSelenium
+Library           Selenium2Library
 
 *** Test Cases ***
 CallPythonLibs
@@ -8,6 +9,7 @@ CallPythonLibs
     Clear Counter
     PrintHello1
     PrintHEllo2
+    One Argument    a
 
 ExtendSeleniumLibrary
-    Title Should Start With    Selenium Easy
+    ExtendedSelenium.Title Should Be    Selenium Easy

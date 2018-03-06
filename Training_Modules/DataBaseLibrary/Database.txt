@@ -10,3 +10,4 @@ DatabaseLibrary
     Execute Sql String    Select NR from TMAILBOX where Status ='U' FETCH FIRST ROW ONLY
     Call Stored Procedure    StoredProcedureNAme
     ${Var}
+    Connect To Database    pyodbc

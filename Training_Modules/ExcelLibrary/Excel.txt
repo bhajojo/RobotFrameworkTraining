@@ -1,0 +1,9 @@
+*** Settings ***
+Library           ExcelLibrary
+
+*** Test Cases ***
+ExcelKeywords
+    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    Add New Sheet    TestSheet
+    Add New Sheet    Test Sheet 1
+    Save Excel Current Directory    File1.xls
