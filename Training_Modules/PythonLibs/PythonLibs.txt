@@ -10,4 +10,4 @@ CallPythonLibs
     PrintHEllo2
 
 ExtendSeleniumLibrary
-    Title Should Start With    Selenium Easy
+    ExtendedSelenium.Title Should Be    Selenium Easy
