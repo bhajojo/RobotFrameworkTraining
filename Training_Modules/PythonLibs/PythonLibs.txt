@@ -1,6 +1,7 @@
 *** Settings ***
 Library           ExampleLibrary
 Library           ExtendedSelenium
+Library           Selenium2Library
 
 *** Test Cases ***
 CallPythonLibs

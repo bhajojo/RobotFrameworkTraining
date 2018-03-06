@@ -1,5 +1,4 @@
 
-
 def printEmpname():
     print ("Bharat in PrintEmpname function")
 

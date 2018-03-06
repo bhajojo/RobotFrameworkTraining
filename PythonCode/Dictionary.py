@@ -4,3 +4,5 @@ employee  ={
     "name3" : "Gaurav",
 
 }
+
+print (employee["name3"])
