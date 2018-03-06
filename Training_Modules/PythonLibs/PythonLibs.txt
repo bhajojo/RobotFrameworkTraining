@@ -8,6 +8,7 @@ CallPythonLibs
     Clear Counter
     PrintHello1
     PrintHEllo2
+    One Argument    a
 
 ExtendSeleniumLibrary
     ExtendedSelenium.Title Should Be    Selenium Easy
