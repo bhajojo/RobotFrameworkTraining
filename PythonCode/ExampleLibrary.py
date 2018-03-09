@@ -21,3 +21,9 @@ class ExampleLibrary:
 
     def PrintHello2(self):
         print "Hello World"
+
+    def fib(self,n):  # write Fibonacci series up to n
+        a, b = 0, 1
+        while b < n:
+            print b,
+            a, b = b, a + b

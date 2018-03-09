@@ -6,6 +6,7 @@ for names in Employee_Name:
 #Reverse the list
 Employee_Name.reverse()
 
+
 print "Reversing the List"
 for names in Employee_Name:
     print names
@@ -26,4 +27,5 @@ for names in Employee_Name:
 
 # List Slicing
 print "Slice  the List"
-print (Employee_Name[2:])
+print (Employee_Name[1:5])
+

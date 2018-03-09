@@ -2,6 +2,8 @@
 Library           ExampleLibrary
 Library           ExtendedSelenium
 Library           Selenium2Library
+Library           ExtendedExcel
+Library           ExcelLibrary
 
 *** Test Cases ***
 CallPythonLibs
@@ -9,7 +11,13 @@ CallPythonLibs
     Clear Counter
     PrintHello1
     PrintHEllo2
-    One Argument    a
+    Fib    20
 
 ExtendSeleniumLibrary
     ExtendedSelenium.Title Should Be    Selenium Easy
+
+Verifykeyword
+    Title Should Start With    abc
+    ExcelLibrary.Get Avg Of Rows    1    1
+    Selenium2Library.Go Back
+    Selenium2Library.Get Matching Xpath Count    Xpath
