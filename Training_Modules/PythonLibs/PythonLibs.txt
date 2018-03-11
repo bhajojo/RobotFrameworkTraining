@@ -17,7 +17,9 @@ ExtendSeleniumLibrary
     ExtendedSelenium.Title Should Be    Selenium Easy
 
 Verifykeyword
-    Title Should Start With    abc
-    ExcelLibrary.Get Avg Of Rows    1    1
-    Selenium2Library.Go Back
-    Selenium2Library.Get Matching Xpath Count    Xpath
+    Comment    Title Should Start With    abc
+    Comment    ExcelLibrary.Get Avg Of Rows    1    1
+    Comment    Selenium2Library.Go Back
+    Comment    Selenium2Library.Get Matching Xpath Count    Xpath
+    excelLibrary.Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    ExcelLibrary.Get Avg Of Rows    ExcelExample    0

@@ -33,7 +33,7 @@ LaunchWebApplication
     [Arguments]    ${BROWSER_NAME}
     [Documentation]    Launch the Browser based on the parameter
     Log    ${EXECDIR}
-    Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
+    ExcelLibrary.Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
     @{List}=    Get Row Values    Global    1
     open Browser    ${List[0][1]}    ${BROWSER_NAME}
     Maximize Browser Window

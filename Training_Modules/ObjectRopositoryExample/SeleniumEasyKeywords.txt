@@ -1,0 +1,10 @@
+*** Settings ***
+Library           Selenium2Library
+Variables         ../../Common_Resources/objRepTrainingMike.py
+
+*** Keywords ***
+Opening Simple Form Demo
+    Click Element    ${objTopHeaderInputForm}
+    Click Element    ${objSubHeaderHeaderSimpleDFormDemo}
+
+Verify Single Input Field Section

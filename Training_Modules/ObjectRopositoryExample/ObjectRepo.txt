@@ -1,0 +1,12 @@
+*** Settings ***
+Variables         ../../Common_Resources/objRepTrainingMike.py
+Resource          SeleniumEasyKeywords.txt
+Resource          ../../Common_Resources/common_resources.txt
+
+*** Test Cases ***
+Repo Demo Test Case
+    LaunchWebApplication    FF
+    Opening Simple Form Demo
+    Comment    ${Var}    Set Variable    Robot Framework
+    Comment    Comment    @{Words}    Split string    ${Var}    ${SPACE}
+    Comment    Remove String    ${Var}    Robot${SPACE}
