@@ -15,6 +15,7 @@ CallPythonLibs
 
 ExtendSeleniumLibrary
     ExtendedSelenium.Title Should Be    Selenium Easy
+    ExtendedExcel.Get Avg Of Rows
 
 Verifykeyword
     Comment    Title Should Start With    abc
@@ -22,4 +23,4 @@ Verifykeyword
     Comment    Selenium2Library.Go Back
     Comment    Selenium2Library.Get Matching Xpath Count    Xpath
     excelLibrary.Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
-    ExcelLibrary.Get Avg Of Rows    ExcelExample    0
+    ${SumOfRows}    ExcelLibrary.Get Sum Of Rows    ExcelExample    0
