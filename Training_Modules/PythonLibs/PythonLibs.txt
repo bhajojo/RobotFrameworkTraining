@@ -4,6 +4,7 @@ Library           ExtendedSelenium
 Library           Selenium2Library
 Library           ExtendedExcel
 Library           ExcelLibrary
+Library           TestPythonFile
 
 *** Test Cases ***
 CallPythonLibs
@@ -18,9 +19,14 @@ ExtendSeleniumLibrary
     ExtendedExcel.Get Avg Of Rows
 
 Verifykeyword
-    Comment    Title Should Start With    abc
-    Comment    ExcelLibrary.Get Avg Of Rows    1    1
-    Comment    Selenium2Library.Go Back
-    Comment    Selenium2Library.Get Matching Xpath Count    Xpath
     excelLibrary.Open Excel    ${EXECDIR}/RobotFrameworkTraining/Test_Data/GlobalTestData.xls
-    ${SumOfRows}    ExcelLibrary.Get Sum Of Rows    ExcelExample    0
+    ${SumOfRows}    ExcelLibrary.Get Sum Of Rows    ExcelExample    1
+    ${Var1}    ExcelLibrary.read_cell_data_by_name    ExcelExample    A1
+    ${Var2}    ExcelLibrary.read_cell_data_by_name    ExcelExample    B1
+    ${Var3}    Evaluate    ${Var1}+${Var2}
+    log    ${Var3}
+
+TestPythonLibsFromScratch
+    PrintHelloTest    Learning    Robot
+    PrintHelloTest1
+    PrintHelloTest2
