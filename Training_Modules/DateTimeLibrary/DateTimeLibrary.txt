@@ -29,7 +29,7 @@ GetCurrentDate
     Comment    Should Be Equal    ${date}    2014-06-12 12:00:58.946
     ${date} =    Get Current Date    result_format=datetime
     Should Be Equal    ${date.year}    ${2018}
-    Should Be Equal    ${date.month}    ${2}
+    Should Be Equal    ${date.month}    ${3}
 
 ConvertTime
     ${time} =    Convert Time    10 seconds
@@ -40,8 +40,6 @@ ConvertTime
     Should Be Equal    ${time}    01:01:02
 
 SubstractDateFromDate
-    Get Text    record1
-    Get Text    Rcord 2
     ${time} =    Subtract Date From Date    2014-05-28 12:05:52    2014-05-27 12:05:10
     Comment    Should Be Equal    ${time}    ${42}
 
