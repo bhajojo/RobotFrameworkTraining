@@ -24,7 +24,7 @@ GetIndexFromList
     ${names} =    Create List    First Name    Family Name    Email
     ${Var}    Get Index From List    ${names}    Email
     Convert To String    ${Var}
-    Should Be Equal    ${Var}    2
+    Should Be Equal As Integers    ${Var}    2
 
 SetToDictionary
     ${D1}=    Create Dictionary
